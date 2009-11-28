@@ -454,7 +454,7 @@ public class SqlFrame extends javax.swing.JFrame {
         ta.addMouseListener(new MouseAdapter() {
 
             public void mouseClicked(MouseEvent evt) {
-                ComponentHelper.textPopup(evt, ta);
+                ComponentHelper.clearPopup(evt, ta);
             }
         });
         sp.setViewportView(ta);
@@ -499,12 +499,12 @@ public class SqlFrame extends javax.swing.JFrame {
 
     private void logMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logMouseClicked
         // TODO add your handling code here:
-        ComponentHelper.textPopup(evt, log);
+        ComponentHelper.clearPopup(evt, log);
     }//GEN-LAST:event_logMouseClicked
 
     private void jTextArea1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextArea1MouseClicked
         // TODO add your handling code here:
-        ComponentHelper.textPopup(evt, jTextArea1);
+        ComponentHelper.clearPopup(evt, jTextArea1);
     }//GEN-LAST:event_jTextArea1MouseClicked
 
     /**

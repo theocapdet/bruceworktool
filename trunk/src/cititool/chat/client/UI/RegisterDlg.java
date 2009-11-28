@@ -462,8 +462,8 @@ public class RegisterDlg extends javax.swing.JDialog {
             userinfo.setPhotopath(photopath.getText());
 
             Socket s = new Socket(host, port);
-            ClientContext.registerUser(userinfo, s);
-            String rstr = TransProtocol.readObject(s).toString();
+            ClientContext.registerUser(userinfo, s,null);
+            String rstr = TransProtocol.responseObject(s).toString();
             if (rstr.equals(SystemConstants.REG_SUC + "")) {
                 JOptionPane.showMessageDialog(this, "register success!");
                 this.dispose();

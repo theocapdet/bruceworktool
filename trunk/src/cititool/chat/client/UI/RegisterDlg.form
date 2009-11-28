@@ -132,8 +132,8 @@
                                                       <Group type="102" alignment="0" attributes="0">
                                                           <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                                                           <Group type="103" groupAlignment="0" attributes="0">
-                                                              <Component id="phoneNo" pref="153" max="32767" attributes="0"/>
-                                                              <Component id="nickname" alignment="0" pref="153" max="32767" attributes="1"/>
+                                                              <Component id="phoneNo" pref="141" max="32767" attributes="0"/>
+                                                              <Component id="nickname" alignment="0" pref="141" max="32767" attributes="1"/>
                                                           </Group>
                                                           <EmptySpace max="-2" attributes="0"/>
                                                           <Group type="103" groupAlignment="0" attributes="0">
@@ -145,7 +145,7 @@
                                               </Group>
                                               <Group type="102" attributes="0">
                                                   <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="photopath" pref="165" max="32767" attributes="0"/>
+                                                  <Component id="photopath" pref="151" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>

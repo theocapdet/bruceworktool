@@ -11,14 +11,16 @@
 package cititool.chat.client.UI;
 
 import cititool.chat.client.ClientContext;
+import cititool.chat.client.handler.ClientRecHandler;
 import cititool.model.UserInfo;
+import cititool.util.ComponentHelper;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.prefs.Preferences;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -35,10 +37,9 @@ public class UserInfoFrame extends javax.swing.JFrame {
     /** Creates new form UserList */
     public UserInfoFrame(String username, final Socket s) {
         this.curuser = username;
-        this.socket = s;
         initComponents();
         ClientContext.instance();
-        ClientContext.addorUpdateSocket(curuser, s);
+        ClientContext.setCurSocket(s);
         initdata();
     }
 
@@ -58,6 +59,8 @@ public class UserInfoFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         userTree = new javax.swing.JTree();
         serverlist = new javax.swing.JPanel();
+        storefolder = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         clientlog = new javax.swing.JTextPane();
@@ -109,22 +112,42 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         userlistareaLayout.setVerticalGroup(
             userlistareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
         );
 
         listpane.addTab(resourceMap.getString("userlistarea.TabConstraints.tabTitle"), userlistarea); // NOI18N
 
         serverlist.setName("serverlist"); // NOI18N
 
+        storefolder.setText(resourceMap.getString("storefolder.text")); // NOI18N
+        storefolder.setName("storefolder"); // NOI18N
+
+        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+        jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout serverlistLayout = new javax.swing.GroupLayout(serverlist);
         serverlist.setLayout(serverlistLayout);
         serverlistLayout.setHorizontalGroup(
             serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 244, Short.MAX_VALUE)
+            .addGroup(serverlistLayout.createSequentialGroup()
+                .addComponent(storefolder, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         serverlistLayout.setVerticalGroup(
             serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 560, Short.MAX_VALUE)
+            .addGroup(serverlistLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(storefolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap(495, Short.MAX_VALUE))
         );
 
         listpane.addTab(resourceMap.getString("serverlist.TabConstraints.tabTitle"), serverlist); // NOI18N
@@ -135,6 +158,11 @@ public class UserInfoFrame extends javax.swing.JFrame {
 
         clientlog.setEditable(false);
         clientlog.setName("clientlog"); // NOI18N
+        clientlog.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clientlogMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(clientlog);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -145,7 +173,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
         );
 
         listpane.addTab(resourceMap.getString("jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
@@ -165,7 +193,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 560, Short.MAX_VALUE)
+            .addGap(0, 529, Short.MAX_VALUE)
         );
 
         chattab.addTab(resourceMap.getString("jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
@@ -180,7 +208,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -216,17 +244,17 @@ public class UserInfoFrame extends javax.swing.JFrame {
                     menu.setVisible(false);
                 }
             }
-
+            //get user information
             TreePath path = userTree.getSelectionPath();
-            if (path != null) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            if (path != null && node.isLeaf() ) {
+                
                 String username = node.getUserObject().toString();
-                UserInfo user = ClientContext.getFriendInfo(username);
+                UserInfo user = ClientContext.getCacheInfo(username);
                 if (user == null) {
-                    user = ClientContext.loadUserInfotFromServer(username, curuser);
-                    ClientContext.setFriendInfo(username, user);
+                    user = ClientContext.loadUserInfotFromServer(username);
+                    ClientContext.setCacheInfo(username, user);
                 }
-
                 if (evt.getButton() == MouseEvent.BUTTON1) {
                     if (evt.getClickCount() == 2) {
                         if (user != null) {
@@ -243,9 +271,22 @@ public class UserInfoFrame extends javax.swing.JFrame {
             ClientContext.productLog("userTreeClient==>", ex);
         }
     }//GEN-LAST:event_userTreeMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        ComponentHelper.filePopup(storefolder, "storedfolder", pref, this);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void clientlogMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientlogMouseClicked
+        // TODO add your handling code here:
+        ComponentHelper.clearPopup(evt, clientlog);
+
+    }//GEN-LAST:event_clientlogMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane chattab;
     private javax.swing.JTextPane clientlog;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -254,13 +295,14 @@ public class UserInfoFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane listpane;
     private javax.swing.JPanel serverlist;
+    private javax.swing.JTextField storefolder;
     private javax.swing.JTree userTree;
     private javax.swing.JPanel userlistarea;
     // End of variables declaration//GEN-END:variables
     private ChatUserinfoTabDef tab;
+    private Preferences  pref;
     private String curuser;
     private JPopupMenu menu;
-    private Socket socket;
 
     private void freshtree() {
         try {
@@ -278,25 +320,47 @@ public class UserInfoFrame extends javax.swing.JFrame {
             userTree.setModel(tree);
             userTree.updateUI();
         } catch (IOException ex) {
-            ClientContext.warnLog("initdata() ", ex);
+            ClientContext.warnLog("fresh tree() ", ex);
         } catch (ClassNotFoundException ex) {
-            ClientContext.warnLog("initdata() ", ex);
+            ClientContext.warnLog("fresh tree() ", ex);
         }
+    }
+
+    private void loadSetting(){
+
+        pref = Preferences.userRoot().node("/com/chat/usersetting/"+curuser);
+        storefolder.setText(pref.get("storedfolder", ""));
     }
 
     private void initdata() {
         tab = new ChatUserinfoTabDef(chattab);
         ClientContext.setlog(clientlog);
         Thread t = new Thread(new Runnable() {
-
             public void run() {
-                freshtree();
+                try {
+                    //loadSetting
+                    loadSetting();
+                    
+                    //load online info
+                    freshtree();
+                    //load self info
+                    UserInfo c = ClientContext.loadUserInfotFromServer(curuser);
+                    //load picture
+
+
+
+                    ClientContext.setCacheInfo(curuser, c);
+                    //start recv thread
+                    ClientRecHandler hander=new ClientRecHandler(ClientContext.getCurrentSocket());
+                    hander.start();
+                } catch (IOException ex) {
+                    ClientContext.warnLog("initdata() ", ex);
+                } catch (ClassNotFoundException ex) {
+                    ClientContext.warnLog("initdata() ", ex);
+                }
             }
         });
         t.start();
 
-    }
-
-    private void addUserTab() {
     }
 }

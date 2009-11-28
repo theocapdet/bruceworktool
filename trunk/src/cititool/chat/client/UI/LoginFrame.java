@@ -279,8 +279,8 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
         // TODO add your handling code here:
-        
-        rDlg=new RegisterDlg(this, true);
+
+        rDlg = new RegisterDlg(this, true);
         rDlg.pack();
         rDlg.setHost(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
         WindowHelper.showCenter(rDlg);
@@ -294,14 +294,15 @@ public class LoginFrame extends javax.swing.JFrame {
 
         try {
             final Socket s = new Socket(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
-            TransProtocol.writeLogin(username, userpass, s);
-            String rstr = TransProtocol.readObject(s).toString();
+            TransProtocol.requestLogin(username, userpass, s);
+            String rstr = TransProtocol.responseObject(s).toString();
             if (rstr.equals(SystemConstants.LOGON + "")) {
                 Thread.sleep(500);
                 this.setVisible(false);
                 java.awt.EventQueue.invokeLater(new Runnable() {
+
                     public void run() {
-                        JFrame frame = new UserInfoFrame(username,s);
+                        JFrame frame = new UserInfoFrame(username, s);
                         frame.addWindowListener(new java.awt.event.WindowAdapter() {
 
                             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -309,18 +310,18 @@ public class LoginFrame extends javax.swing.JFrame {
                             }
                         });
                         WindowHelper.showCenter(frame);
-                        
+
                     }
                 });
             } else {
                 JOptionPane.showMessageDialog(this, rstr);
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "login fail..check system connection");
         } catch (IOException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "login fail..check system connection");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "login fail..check system connection");
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
@@ -328,20 +329,20 @@ public class LoginFrame extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             Socket s = new Socket(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
-            TransProtocol.writeTestConn(s);
-            String echo = TransProtocol.readObject(s).toString();
-            if (echo.equals(SystemConstants.TESTSUC+"")) {
+            TransProtocol.requestTestConn(s);
+            String echo = TransProtocol.responseObject(s).toString();
+            if (echo.equals(SystemConstants.TESTSUC + "")) {
                 JOptionPane.showMessageDialog(this, "connection success..");
             } else {
                 JOptionPane.showMessageDialog(this, "connection fail..");
             }
 
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "connection fail..");
         } catch (UnknownHostException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "connection fail..");
         } catch (IOException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "connection fail..");
         }
     }//GEN-LAST:event_testServerActionPerformed
 
@@ -384,16 +385,13 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JToggleButton testServer;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
-
     private RegisterDlg rDlg;
 
-    public JTextArea getLog(){
+    public JTextArea getLog() {
 
         return loginLog;
     }
 
     private void initdata() {
-
-   
     }
 }

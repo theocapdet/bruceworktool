@@ -4,14 +4,10 @@
  */
 package test;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,10 +40,13 @@ public class A {
 
         }
     }
+    private ExecutorService pool = Executors.newCachedThreadPool();
+
+
 
     public static void main(String args[]) {
         A a = new A();
-        a.test();
+
 
     }
 }

@@ -40,14 +40,13 @@ public class MainServer extends Thread {
     private String createtime;
     private String lastmodifytime;
     private boolean suspend;
-
     private JTable serverTab;
     //user connection server
-    private  Map<String, SessionServer> pool = new ConcurrentHashMap<String, SessionServer>();
+    private Map<String, SessionServer> pool = new ConcurrentHashMap<String, SessionServer>();
     //register server 
-    private  RegisterServer regServer;
+    private RegisterServer regServer;
     //login server
-    private  LoginServer loginServer;
+    private LoginServer loginServer;
 
     public void updateTableModel() {
 
@@ -76,9 +75,9 @@ public class MainServer extends Thread {
         serverTab.updateUI();
     }
 
-    public void setView(JTable serverTab){
+    public void setView(JTable serverTab) {
 
-        this.serverTab=serverTab;
+        this.serverTab = serverTab;
     }
 
     public MainServer(String serverName, Integer port) {
@@ -111,7 +110,7 @@ public class MainServer extends Thread {
                 server = new ServerSocket(port);
             }
         } catch (IOException ex) {
-            ServerContext.warnServerLog(serverName+"build error:", ex);
+            ServerContext.warnServerLog(serverName + "build error:", ex);
         }
 
     }
@@ -144,7 +143,7 @@ public class MainServer extends Thread {
         return pool.get(username);
     }
 
-    public synchronized  void freshpool() {
+    public synchronized void freshpool() {
         for (Iterator<SessionServer> iter = pool.values().iterator(); iter.hasNext();) {
             SessionServer t = iter.next();
             if (t.getState() == Thread.State.TERMINATED) {
@@ -153,7 +152,7 @@ public class MainServer extends Thread {
         }
     }
 
-    private  void scanpool() {
+    private void scanpool() {
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
 
@@ -165,7 +164,8 @@ public class MainServer extends Thread {
         timer.schedule(task, 500, 1000 * 300);
     }
 
-    public  Map getOnLineUser() {
+
+    public Map getSessionPool() {
         return pool;
     }
 
@@ -175,42 +175,42 @@ public class MainServer extends Thread {
             //login accept thread...
 
             statusOut(SystemConstants.Status.STARTED);
-             updateTableModel();
-           // scanpool();
+            updateTableModel();
+            // scanpool();
             Socket socket = null;
-            
-            if (regServer == null) {
-                regServer = new RegisterServer();
-            }
-            regServer.start();
-            
+
+
+
+
             while (this.isAlive()) {
                 if (suspend) {
                     this.wait();
-                }                
+                }
                 try {
                     socket = server.accept();
-                    Object content = TransProtocol.readObject(socket);
+                    Object content = TransProtocol.responseObject(socket);
                     if (content instanceof String) {
                         String t = content.toString();
-                       
+
                         if (t.equals(TransProtocol.TESTH)) {
                             // test connection...
-                            ServerContext.productServerLog("ip==>"+socket.getInetAddress().getHostAddress()+"  test==>", null);
+                            ServerContext.productServerLog("ip==>" + socket.getInetAddress().getHostAddress() + "  test==>", null);
                             TransProtocol.writeStr(SystemConstants.TESTSUC + "", socket);
                         } //registry server
-                        
                         else if (t.startsWith(TransProtocol.REG_HEADER)) {
-                            regServer.setSocket(socket);                           
-                        }
-                        else if (t.startsWith(TransProtocol.LOGIN_HEADER)) {
+                            if (regServer == null) {
+                                regServer = new RegisterServer(socket);
+                                regServer.start();
+                            }else{
+                                regServer.setSocket(socket);
+                            }
+                        } else if (t.startsWith(TransProtocol.LOGIN_HEADER)) {
                             String[] part = t.substring(1).split(TransProtocol.SPLIT);
-                            if (ServerDataHandler.testMatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
-                               TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
-                                ServerContext.productServerLog(part[0]+"==>login", null);
-                                SessionServer recv = new SessionServer(part[0], socket);
+                            if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
+                                TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
+                                ServerContext.productServerLog(part[0] + "==>login", null);
+                                SessionServer recv = new SessionServer(serverName,part[0], socket);
                                 pool.put(part[0], recv);
-                                recv.setPool(pool);
                                 recv.start();
                             } else {
                                 TransProtocol.writeStr(SystemConstants.NOAUTHORIZE + "", socket);
@@ -218,15 +218,15 @@ public class MainServer extends Thread {
                         }
                     }
                 } catch (IOException ex) {
-                     //ServerContext.productServerLog("server socket exception", ex);
+                    //ServerContext.productServerLog("server socket exception", ex);
                     //System.out.println("server socket exception" + ex.getMessage());
                 }
             }
 
         } catch (InterruptedException ex) {
-             ServerContext.warnServerLog("server main thread error:", ex);
+            ServerContext.warnServerLog("server main thread error:", ex);
         } catch (ClassNotFoundException ex) {
-             ServerContext.warnServerLog("server main thread error:", ex);
+            ServerContext.warnServerLog("server main thread error:", ex);
         }
     }
 

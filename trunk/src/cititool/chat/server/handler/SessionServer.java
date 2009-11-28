@@ -11,7 +11,6 @@ import cititool.util.ComponentHelper;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.Set;
@@ -21,47 +20,42 @@ import javax.swing.JTextArea;
  *
  * @author zx04741
  */
-public class SessionServer extends Thread {
+public class SessionServer extends Server {
 
-    private Socket socket;
     private JTextArea log;
     private String username;
-    private static Map pool;
+    private Map<String, SessionServer> pool;
 
-    public SessionServer(String username, Socket socket) {
-        this.socket = socket;
+    public SessionServer(String serverName,String username,  Socket socket) {
+        super(socket,serverName);
         this.username = username;
+        pool=ServerContext.getServer(serverName).getSessionPool();
     }
-
-    public void setPool(Map pool){
-        this.pool=pool;
-    }
-
-    public void setLog(JTextArea log) {
-        this.log = log;
-    }
-    
 
     @Override
     public void run() {
         while (!socket.isClosed()) {
             try {
-                Object content = TransProtocol.readObject(socket).toString();
+                Object content = TransProtocol.responseObject(socket).toString();
                 if (content instanceof String) {
                     String t = content.toString();
-                    if (t.startsWith(TransProtocol.TALK_HEADER)) {
+                    if (t.startsWith(TransProtocol.TALK_SEND_H)) {
                         //talk
-                        String p[] = t.substring(1).split(TransProtocol.SPLIT);
+                        String p[] = t.substring(TransProtocol.TALK_SEND_H.length()).split(TransProtocol.SPLIT);
                         String user = p[0];
                         String talk = p[1];
-                        productLog("from [" + username + "] to[" + user + "]==>" + talk);
-                    } else if (t.startsWith(TransProtocol.USERLIST_HEADER)) {
+                        ServerContext.productServerLog("sendMsg::  from [" + username + "] to[" + user + "]==>" + talk, null);
+                        SessionServer sSr = pool.get(user);
+                        sSr.sendMsg(talk, username);
+
+                    }
+                    else if (t.startsWith(TransProtocol.USERLIST_HEADER)) {
                         Set onlineusers = pool.keySet();
-                        Object[] users=(Object[])onlineusers.toArray();
+                        Object[] users = (Object[]) onlineusers.toArray();
                         TransProtocol.writeObj(users, socket);
                     } else if (t.startsWith(TransProtocol.USERNAME_HEADER)) {
-                        String username=t.substring(TransProtocol.USERNAME_HEADER.length());
-                        UserInfo user=ServerContext.getClientByUserName(username);
+                        String username = t.substring(TransProtocol.USERNAME_HEADER.length());
+                        UserInfo user = ServerContext.getUserByUserName(username);
                         TransProtocol.writeObj(user, socket);
                     }
 
@@ -71,7 +65,7 @@ public class SessionServer extends Thread {
             } catch (IOException ex) {
                 ServerContext.productServerLog("SessionServer error:", ex);
             } catch (ClassNotFoundException ex) {
-               ServerContext.productServerLog("SessionServer error:", ex);
+                ServerContext.productServerLog("SessionServer error:", ex);
             }
         }
 
@@ -84,7 +78,7 @@ public class SessionServer extends Thread {
     }
 
     public void sendMsg(String str, String username) throws IOException {
-        TransProtocol.writeTalk(str, username, getSocket());
+        TransProtocol.sendTalk(str, username, socket);
     }
 
     /**
@@ -93,6 +87,4 @@ public class SessionServer extends Thread {
     public Socket getSocket() {
         return socket;
     }
-
-
 }

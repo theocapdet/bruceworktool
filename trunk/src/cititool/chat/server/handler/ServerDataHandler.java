@@ -18,10 +18,10 @@ import java.io.IOException;
  */
 public class ServerDataHandler {
 
-    public static int testMatchLogin(String user, String pass, String servername) throws IOException, ClassNotFoundException {
+    public static int MatchLogin(String user, String pass, String servername) throws IOException, ClassNotFoundException {
 
 
-        UserInfo ui = ServerContext.getClientByUserName(user);
+        UserInfo ui = ServerContext.getUserByUserName(user);
         if (ui.getPass().equals(pass)) {
             return SystemConstants.LOGON;
         } else {

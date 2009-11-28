@@ -23,6 +23,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import org.jdom.JDOMException;
 
+
 /**
  *
  * @author Administrator
@@ -162,7 +163,12 @@ public class ServerContext {
         return factory;
     }
 
-    public static UserInfo getClientByUserName(String username) {
+    public static MainServer getServer(String serverName){
+
+       return factory.getServerByName(serverName);
+    }
+
+    public static UserInfo getUserByUserName(String username) {
         List list = db.getTableList(UserInfo.class);
         for (int i = 0; i < list.size(); i++) {
             UserInfo user = (UserInfo) list.get(i);
@@ -177,7 +183,7 @@ public class ServerContext {
 
         MainServer server = factory.getServerByName(servername);
         if (server != null) {
-            UserInfo user = getClientByUserName(username);
+            UserInfo user = getUserByUserName(username);
             SessionServer controller = server.getUserServer(geter);
             if (controller != null && controller.getState() == Thread.State.RUNNABLE) {
                 TransProtocol.writeObj(user, controller.getSocket());
@@ -190,6 +196,6 @@ public class ServerContext {
 
     public static Map getOnlineUserInfo(String serverName) {
         MainServer server = factory.getServerByName(serverName);
-        return server.getOnLineUser();
+        return server.getSessionPool();
     }
 }

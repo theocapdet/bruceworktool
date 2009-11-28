@@ -18,8 +18,8 @@ import java.util.logging.Logger;
  */
 public class LoginServer extends Server {
 
-    public LoginServer() {
-        super();
+    public LoginServer(Socket socket) {
+        super(socket);
     }
 
 

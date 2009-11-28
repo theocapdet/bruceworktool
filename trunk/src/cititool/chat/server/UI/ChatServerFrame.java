@@ -735,7 +735,7 @@ public class ChatServerFrame extends javax.swing.JFrame {
 
     private void dblogMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dblogMouseClicked
         // TODO add your handling code here:
-        ComponentHelper.textPopup(evt, dblog);
+        ComponentHelper.clearPopup(evt, dblog);
     }//GEN-LAST:event_dblogMouseClicked
 
     private void picfolderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_picfolderBtnActionPerformed

@@ -44,10 +44,10 @@ public class ServerController extends Thread {
         while (!socket.isClosed()) {
             try {
                 socket = server.accept();
-                Object content = TransProtocol.readObject(getSocket()).toString();
+                Object content = TransProtocol.responseObject(getSocket()).toString();
                 if (content instanceof String) {
                     String t = content.toString();
-                    if (t.startsWith(TransProtocol.TALK_HEADER)) {
+                    if (t.startsWith(TransProtocol.TALK_SEND_H)) {
                         //talk
                         String p[] = t.substring(1).split(TransProtocol.SPLIT);
                         String user = p[0];
@@ -80,7 +80,7 @@ public class ServerController extends Thread {
     }
 
     public void sendMsg(String str, String username) throws IOException {
-        TransProtocol.writeTalk(str, username, getSocket());
+        TransProtocol.sendTalk(str, username, getSocket());
     }
 
     /**

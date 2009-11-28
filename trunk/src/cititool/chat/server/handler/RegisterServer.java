@@ -24,8 +24,9 @@ public class RegisterServer extends Server {
 
     private static Semaphore gate = new Semaphore(1);
 
-    public RegisterServer() {
+    public RegisterServer(Socket socket) {
         super();
+        this.setSocket(socket);
     }
 
     public synchronized void setSocket(Socket socket) {
@@ -36,12 +37,10 @@ public class RegisterServer extends Server {
     }
 
     public void run() {
-        if (socket == null) {
-            try {
-                gate.acquire();
-            } catch (InterruptedException ex) {
-                ServerContext.warnServerLog("register:", ex);
-            }
+        try {
+            gate.acquire();
+        } catch (InterruptedException ex) {
+            ServerContext.warnServerLog("register:", ex);
         }
         do {
             try {
@@ -52,7 +51,7 @@ public class RegisterServer extends Server {
             long s = System.currentTimeMillis();
             UserInfo user = null;
             try {
-                user = (UserInfo) TransProtocol.readObject(socket);
+                user = (UserInfo) TransProtocol.responseObject(socket);
                 if (!StringHelper.isEmpty(user.getPhotopath())) {
                     long s1 = System.currentTimeMillis();
                     String picname = user.getPhotopath().substring(user.getPhotopath().lastIndexOf(File.separator) + 1);

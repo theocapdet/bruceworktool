@@ -35,10 +35,17 @@ public class TransProtocol {
     // operate str header
     public final static String TESTH = S + "t" + S;
     public final static String LOGIN_HEADER = ((char) 0xff00) + "";
-    public final static String TALK_HEADER = ((char) 0xff01) + "";
-    public final static String USERNAME_HEADER = ((char) 0xff02) + "";
-    public final static String USERLIST_HEADER = ((char) 0xff03) + "";
-    public final static String REG_HEADER = ((char) 0xff04) + "";
+    public final static String TALK_SEND_H = ((char) 0xff01) + "";
+    public final static String TALK_REC_H =((char) 0xff02)+"";
+
+
+    public final static String USERNAME_HEADER = ((char) 0xff03) + "";
+    public final static String USERLIST_HEADER = ((char) 0xff04) + "";
+
+    public final static String REG_HEADER = ((char) 0xff05) + "";
+
+    public final static String REQUEST_FILE_H=((char) 0xff06) + "";
+
     public final static String ERROR = (char) 0xffff + "";
 
     /**
@@ -161,42 +168,46 @@ public class TransProtocol {
         return bi;
     }
 
-    public static void writeUserName(String username, Socket s) throws IOException {
+    public static void requestUserInfo(String username, Socket s) throws IOException {
 
         writeStr(USERNAME_HEADER + username, s);
     }
 
-    public static void writeLogin(String user, String pass, Socket socket) throws IOException {
+    public static void requestLogin(String user, String pass, Socket socket) throws IOException {
         writeStr(LOGIN_HEADER + user + SPLIT + pass, socket);
     }
 
-    public static void writeRegister(UserInfo user, Socket socket) throws IOException, InterruptedException {
-        writeStr(REG_HEADER, socket);
-        writeObj(user, socket);
-        if (!StringHelper.isEmpty(user.getPhotopath())) {
-            writeFile(new File(user.getPhotopath()), socket);
-        }
 
-    }
-
-    public static void writeTestConn(Socket socket) throws IOException {
+    public static void requestTestConn(Socket socket) throws IOException {
         writeStr(TESTH, socket);
     }
 
-    public static void writeTalk(String talk, String toperson, Socket socket) throws IOException {
+    public static void sendTalk(String talk, String toperson, Socket socket) throws IOException {
 
-        writeStr(TALK_HEADER + toperson + SPLIT + talk, socket);
+        writeStr(TALK_SEND_H + toperson + SPLIT + talk, socket);
 
     }
 
-    public static void writeUserList(Socket s) throws IOException {
+    public static void recvTalk(String talk,String fromperson,Socket socket) throws IOException{
+
+        writeStr(TALK_REC_H + fromperson + SPLIT + talk, socket);
+    }
+
+
+
+    public static void requestUserList(Socket s) throws IOException {
         writeStr(USERLIST_HEADER, s);
     }
 
-    public static Object readObject(Socket socket) throws IOException, ClassNotFoundException {
+    public static Object responseObject(Socket socket) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         String header = (String) ois.readObject();
         Object o = ois.readObject();
         return o;
+    }
+
+    public static void requestFile(String altpath,Socket s) throws IOException{
+    
+        writeStr(REQUEST_FILE_H + altpath, s);
     }
 }

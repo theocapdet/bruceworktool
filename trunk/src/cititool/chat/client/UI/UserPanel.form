@@ -28,12 +28,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jSplitPane4" alignment="0" pref="700" max="32767" attributes="0"/>
+          <Component id="jSplitPane4" alignment="0" pref="796" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jSplitPane4" alignment="0" pref="526" max="32767" attributes="0"/>
+          <Component id="jSplitPane4" alignment="0" pref="514" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -60,12 +60,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="inputsplitpane1" alignment="0" pref="698" max="32767" attributes="0"/>
+                  <Component id="inputsplitpane1" alignment="0" pref="794" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="inputsplitpane1" alignment="0" pref="143" max="32767" attributes="0"/>
+                  <Component id="inputsplitpane1" alignment="0" pref="108" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -97,19 +97,19 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
+                          <Component id="jScrollPane2" alignment="0" pref="499" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace pref="441" max="32767" attributes="0"/>
                               <Component id="sendBtn1" min="-2" pref="58" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane2" alignment="0" pref="499" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jScrollPane2" pref="116" max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" pref="81" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="sendBtn1" min="-2" max="-2" attributes="0"/>
+                              <Component id="sendBtn1" min="-2" pref="19" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -171,12 +171,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="userlabel1" alignment="1" pref="192" max="32767" attributes="0"/>
+                          <Component id="userlabel1" alignment="1" pref="288" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="userlabel1" alignment="0" pref="141" max="32767" attributes="0"/>
+                          <Component id="userlabel1" alignment="0" pref="106" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -232,7 +232,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="374" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="397" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -276,14 +276,14 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="userinfolabel1" alignment="0" pref="192" max="32767" attributes="0"/>
-                      <Component id="photolabel1" alignment="0" pref="192" max="32767" attributes="0"/>
+                      <Component id="userinfolabel1" alignment="0" pref="288" max="32767" attributes="0"/>
+                      <Component id="photolabel1" alignment="0" pref="288" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="photolabel1" pref="243" max="32767" attributes="0"/>
+                          <Component id="photolabel1" pref="267" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="userinfolabel1" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>

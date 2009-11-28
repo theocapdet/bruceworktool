@@ -45,14 +45,14 @@ public class UserClient {
     /**
      * @return the client
      */
-    public Socket getClient() {
+    public Socket getSocket() {
         return client;
     }
 
     /**
      * @param client the client to set
      */
-    public void setClient(Socket client) {
+    public void setSocket(Socket client) {
         this.client = client;
     }
 

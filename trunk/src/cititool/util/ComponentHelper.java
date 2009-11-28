@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.prefs.Preferences;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -129,7 +131,7 @@ public class ComponentHelper {
         pNode.add(node);
     }
 
-    public static void textPopup(MouseEvent evt, final JTextComponent com) {
+    public static void clearPopup(MouseEvent evt, final JTextComponent com) {
         if (evt.getButton() == java.awt.event.MouseEvent.BUTTON3) {
             if (menu == null) {
                 menu = new JPopupMenu();
@@ -150,6 +152,19 @@ public class ComponentHelper {
                 menu.setVisible(false);
             }
         }
+    }
+
+    public static void filePopup(JTextComponent text,String regKey,Preferences pref,Container container){
+       
+        JFileChooser  jc=new JFileChooser(text.getText());
+        jc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if (jc.showOpenDialog(container) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        File f = jc.getSelectedFile();
+        text.setText(f.getPath());
+        pref.put(regKey, text.getText());
+
     }
 
     public static boolean checkEmpty(JTextComponent com, Container container) {

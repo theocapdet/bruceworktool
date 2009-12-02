@@ -199,15 +199,15 @@ public class TransProtocol {
         writeStr(USERLIST_HEADER, s);
     }
 
-    public static Object responseObject(Socket socket) throws IOException, ClassNotFoundException {
+    public static Object getObject(Socket socket) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         String header = (String) ois.readObject();
         Object o = ois.readObject();
         return o;
     }
 
-    public static void requestFile(String altpath,Socket s) throws IOException{
+    public static void requestFile(String relativePath,Socket s) throws IOException{
     
-        writeStr(REQUEST_FILE_H + altpath, s);
+        writeStr(REQUEST_FILE_H + relativePath, s);
     }
 }

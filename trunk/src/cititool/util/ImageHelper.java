@@ -4,17 +4,21 @@
  */
 package cititool.util;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /**
  *
@@ -47,6 +51,17 @@ public class ImageHelper {
         writer.write(null, iioImg, iwparam);
         return out.toByteArray();
 
+    }
+
+    public static void paintImg(JLabel label, File f) throws IOException {
+        
+        int width = (int) label.getPreferredSize().getWidth();
+        int height = (int) label.getPreferredSize().getHeight();
+        Image image = ImageIO.read(f);
+        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics g = bi.getGraphics();
+        g.drawImage(image, 0, 0, width, height, null);
+        label.setIcon(new ImageIcon(bi));
     }
 
     public static BufferedImage loadImage(byte[] data) throws IOException {

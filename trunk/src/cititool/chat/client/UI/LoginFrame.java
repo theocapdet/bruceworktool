@@ -10,18 +10,14 @@
  */
 package cititool.chat.client.UI;
 
-import cititool.chat.client.*;
 import cititool.chat.model.SystemConstants;
 import cititool.chat.protocol.TransProtocol;
 import cititool.util.EncryptHelper;
 import cititool.util.NumberHelper;
 import cititool.util.WindowHelper;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -295,7 +291,7 @@ public class LoginFrame extends javax.swing.JFrame {
         try {
             final Socket s = new Socket(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
             TransProtocol.requestLogin(username, userpass, s);
-            String rstr = TransProtocol.responseObject(s).toString();
+            String rstr = TransProtocol.getObject(s).toString();
             if (rstr.equals(SystemConstants.LOGON + "")) {
                 Thread.sleep(500);
                 this.setVisible(false);
@@ -314,7 +310,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     }
                 });
             } else {
-                JOptionPane.showMessageDialog(this, rstr);
+                JOptionPane.showMessageDialog(this, "user account does't exists!");
             }
         } catch (InterruptedException ex) {
             JOptionPane.showMessageDialog(this, "login fail..check system connection");
@@ -330,7 +326,7 @@ public class LoginFrame extends javax.swing.JFrame {
             // TODO add your handling code here:
             Socket s = new Socket(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
             TransProtocol.requestTestConn(s);
-            String echo = TransProtocol.responseObject(s).toString();
+            String echo = TransProtocol.getObject(s).toString();
             if (echo.equals(SystemConstants.TESTSUC + "")) {
                 JOptionPane.showMessageDialog(this, "connection success..");
             } else {

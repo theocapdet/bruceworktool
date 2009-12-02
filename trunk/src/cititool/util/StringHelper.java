@@ -4,6 +4,7 @@
  */
 package cititool.util;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -1051,7 +1052,10 @@ public class StringHelper {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    public static String getFileName(String path){
 
+        return  path.substring(path.lastIndexOf(File.separator)+1);
+    }
 
 
     public static void main(String args[]) {

@@ -4,6 +4,7 @@
  */
 package cititool.chat.server.handler;
 
+import cititool.chat.client.listener.FileProcesser;
 import cititool.chat.model.SystemConstants;
 import cititool.chat.protocol.TransProtocol;
 import cititool.chat.server.ServerContext;
@@ -51,15 +52,11 @@ public class RegisterServer extends Server {
             long s = System.currentTimeMillis();
             UserInfo user = null;
             try {
-                user = (UserInfo) TransProtocol.responseObject(socket);
+                user = (UserInfo) TransProtocol.getObject(socket);
                 if (!StringHelper.isEmpty(user.getPhotopath())) {
-                    long s1 = System.currentTimeMillis();
-                    String picname = user.getPhotopath().substring(user.getPhotopath().lastIndexOf(File.separator) + 1);
-                    File userpic = new File(ServerContext.getPicpath() + user.getUsername());
-                    if (!(userpic.exists() && userpic.isDirectory())) {
-                        userpic.mkdirs();
-                    }
-                    TransProtocol.readFile(userpic.getPath() + File.separator, socket);
+                    long s1 = System.currentTimeMillis();                  
+                    FileProcesser fp = new FileProcesser();
+                    fp.readFile(ServerContext.getPicpath()+File.separator + user.getUsername(), socket);
                     long e1 = System.currentTimeMillis();
                     System.out.println(" update photo time:" + (e1 - s1) + "ms");
                 }

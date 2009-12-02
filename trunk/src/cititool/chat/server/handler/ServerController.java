@@ -44,7 +44,7 @@ public class ServerController extends Thread {
         while (!socket.isClosed()) {
             try {
                 socket = server.accept();
-                Object content = TransProtocol.responseObject(getSocket()).toString();
+                Object content = TransProtocol.getObject(getSocket()).toString();
                 if (content instanceof String) {
                     String t = content.toString();
                     if (t.startsWith(TransProtocol.TALK_SEND_H)) {

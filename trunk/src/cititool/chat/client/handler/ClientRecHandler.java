@@ -36,10 +36,12 @@ public class ClientRecHandler extends Thread {
     }
 
     public void run() {
-
+        ClientContext.productLog ("recieve thread start...");
         while (!socket.isClosed()) {
             try {
-                Object content = TransProtocol.responseObject(socket).toString();
+                System.out.println("haha");
+                Object content = TransProtocol.getObject(socket).toString();
+                System.out.println("gaga...");
                 if (content instanceof String) {
                     String t = content.toString();
                     if (t.startsWith(TransProtocol.TALK_REC_H)) {
@@ -47,7 +49,6 @@ public class ClientRecHandler extends Thread {
                         String user = p[0];
                         String talk = p[1];
                         ComponentHelper.jtpAppendLine(contentPane, user+":"+talk);
-
                     }
                 } else {
                     /*
@@ -58,8 +59,6 @@ public class ClientRecHandler extends Thread {
                     });*/
                 }
 
-
-
             } catch (BadLocationException ex) {
                 ClientContext.warnLog("ClientRecThread() contentPane error:", ex);
             } catch (IOException ex) {
@@ -68,7 +67,6 @@ public class ClientRecHandler extends Thread {
                 ClientContext.warnLog("ClientRecThread() recv content error:", ex);
             }
         }
-
-
+        ClientContext.productLog ("recieve thread end...");
     }
 }

@@ -170,6 +170,7 @@ public class ServerContext {
 
     public static UserInfo getUserByUserName(String username) {
         List list = db.getTableList(UserInfo.class);
+        if(list!=null)
         for (int i = 0; i < list.size(); i++) {
             UserInfo user = (UserInfo) list.get(i);
             if (user.getUsername().trim().endsWith(username)) {

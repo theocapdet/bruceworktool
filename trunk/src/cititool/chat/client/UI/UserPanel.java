@@ -12,10 +12,10 @@ package cititool.chat.client.UI;
 
 import cititool.chat.client.ClientContext;
 import cititool.chat.protocol.TransProtocol;
-import cititool.global.AppContext;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
-import java.awt.EventQueue;
+import cititool.util.ImageHelper;
+import cititool.util.StringHelper;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -39,9 +39,9 @@ public class UserPanel extends javax.swing.JPanel {
         initComponents();
     }
 
-    public UserPanel(UserInfo username) {
+    public UserPanel(UserInfo user) {
         this();
-        this.user = username;
+        this.user = user;
         initdata();
     }
 
@@ -69,21 +69,25 @@ public class UserPanel extends javax.swing.JPanel {
         chatpane = new javax.swing.JTextPane();
         userinfo1 = new javax.swing.JPanel();
         photolabel1 = new javax.swing.JLabel();
-        userinfolabel1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        userinfopane = new javax.swing.JTextPane();
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(UserPanel.class);
         setBackground(resourceMap.getColor("Form.background")); // NOI18N
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         setName("Form"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(800, 518));
+        setPreferredSize(new java.awt.Dimension(700, 540));
 
         jSplitPane4.setDividerLocation(400);
         jSplitPane4.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane4.setLastDividerLocation(400);
         jSplitPane4.setName("jSplitPane4"); // NOI18N
+        jSplitPane4.setPreferredSize(new java.awt.Dimension(700, 550));
 
         inputArea1.setName("inputArea1"); // NOI18N
 
-        inputsplitpane1.setDividerLocation(500);
+        inputsplitpane1.setDividerLocation(490);
+        inputsplitpane1.setLastDividerLocation(490);
         inputsplitpane1.setName("inputsplitpane1"); // NOI18N
         inputsplitpane1.setOneTouchExpandable(true);
 
@@ -96,7 +100,7 @@ public class UserPanel extends javax.swing.JPanel {
         sendBtn1.setFont(resourceMap.getFont("sendBtn1.font")); // NOI18N
         sendBtn1.setForeground(resourceMap.getColor("sendBtn1.foreground")); // NOI18N
         sendBtn1.setText(resourceMap.getString("sendBtn1.text")); // NOI18N
-        sendBtn1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        sendBtn1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         sendBtn1.setMargin(new java.awt.Insets(0, 0, 0, 0));
         sendBtn1.setName("sendBtn1"); // NOI18N
         sendBtn1.addActionListener(new java.awt.event.ActionListener() {
@@ -115,15 +119,15 @@ public class UserPanel extends javax.swing.JPanel {
         inputarea1.setLayout(inputarea1Layout);
         inputarea1Layout.setHorizontalGroup(
             inputarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
             .addGroup(inputarea1Layout.createSequentialGroup()
-                .addContainerGap(441, Short.MAX_VALUE)
+                .addContainerGap(431, Short.MAX_VALUE)
                 .addComponent(sendBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         inputarea1Layout.setVerticalGroup(
             inputarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, inputarea1Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sendBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -141,11 +145,11 @@ public class UserPanel extends javax.swing.JPanel {
         facearea1.setLayout(facearea1Layout);
         facearea1Layout.setHorizontalGroup(
             facearea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(userlabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+            .addComponent(userlabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
         );
         facearea1Layout.setVerticalGroup(
             facearea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(userlabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+            .addComponent(userlabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
         );
 
         inputsplitpane1.setRightComponent(facearea1);
@@ -154,19 +158,20 @@ public class UserPanel extends javax.swing.JPanel {
         inputArea1.setLayout(inputArea1Layout);
         inputArea1Layout.setHorizontalGroup(
             inputArea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(inputsplitpane1, javax.swing.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
+            .addComponent(inputsplitpane1, javax.swing.GroupLayout.DEFAULT_SIZE, 694, Short.MAX_VALUE)
         );
         inputArea1Layout.setVerticalGroup(
             inputArea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(inputsplitpane1, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
+            .addComponent(inputsplitpane1, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
         );
 
         jSplitPane4.setRightComponent(inputArea1);
 
-        jSplitPane5.setDividerLocation(500);
+        jSplitPane5.setDividerLocation(490);
+        jSplitPane5.setLastDividerLocation(490);
         jSplitPane5.setName("jSplitPane5"); // NOI18N
         jSplitPane5.setOneTouchExpandable(true);
-        jSplitPane5.setPreferredSize(new java.awt.Dimension(613, 200));
+        jSplitPane5.setPreferredSize(new java.awt.Dimension(700, 200));
 
         chatinfoarea1.setName("chatinfoarea1"); // NOI18N
         chatinfoarea1.setPreferredSize(new java.awt.Dimension(416, 336));
@@ -181,7 +186,7 @@ public class UserPanel extends javax.swing.JPanel {
         chatinfoarea1.setLayout(chatinfoarea1Layout);
         chatinfoarea1Layout.setHorizontalGroup(
             chatinfoarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
         );
         chatinfoarea1Layout.setVerticalGroup(
             chatinfoarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,25 +201,28 @@ public class UserPanel extends javax.swing.JPanel {
 
         photolabel1.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("photolabel1.border.lineColor"), 2, true)); // NOI18N
         photolabel1.setName("photolabel1"); // NOI18N
-        photolabel1.setPreferredSize(new java.awt.Dimension(180, 200));
+        photolabel1.setPreferredSize(new java.awt.Dimension(198, 214));
 
-        userinfolabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        userinfolabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        userinfolabel1.setName("userinfolabel1"); // NOI18N
+        jScrollPane3.setName("jScrollPane3"); // NOI18N
+
+        userinfopane.setEditable(false);
+        userinfopane.setForeground(resourceMap.getColor("userinfopane.foreground")); // NOI18N
+        userinfopane.setName("userinfopane"); // NOI18N
+        jScrollPane3.setViewportView(userinfopane);
 
         javax.swing.GroupLayout userinfo1Layout = new javax.swing.GroupLayout(userinfo1);
         userinfo1.setLayout(userinfo1Layout);
         userinfo1Layout.setHorizontalGroup(
             userinfo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(userinfolabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
-            .addComponent(photolabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+            .addComponent(photolabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
         );
         userinfo1Layout.setVerticalGroup(
             userinfo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, userinfo1Layout.createSequentialGroup()
-                .addComponent(photolabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(userinfolabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(userinfo1Layout.createSequentialGroup()
+                .addComponent(photolabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
         );
 
         jSplitPane5.setRightComponent(userinfo1);
@@ -225,20 +233,20 @@ public class UserPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
+            .addComponent(jSplitPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
+            .addComponent(jSplitPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void sendBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendBtn1ActionPerformed
         try {
-            Socket socket=ClientContext.getCurrentSocket();
-            UserInfo curuser=ClientContext.getCurrentUserInfo();
+            Socket socket = ClientContext.getCurrentSocket();
+            UserInfo curuser = ClientContext.getCurrentUserInfo();
             ComponentHelper.jtpAppendLine(chatpane, curuser.getUsername() + ": " + inputtext.getText());
-            TransProtocol.sendTalk(curuser.getUsername()+":"+inputtext.getText(), user.getUsername(), socket);
+            TransProtocol.sendTalk(curuser.getUsername() + ":" + inputtext.getText(), user.getUsername(), socket);
             inputtext.setText("");
         } catch (BadLocationException ex) {
             ClientContext.warnLog("userpanel::" + user.getUsername(), ex);
@@ -257,51 +265,45 @@ public class UserPanel extends javax.swing.JPanel {
     private javax.swing.JTextPane inputtext;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane4;
     private javax.swing.JSplitPane jSplitPane5;
     private javax.swing.JLabel photolabel1;
     private javax.swing.JButton sendBtn1;
     private javax.swing.JPanel userinfo1;
-    private javax.swing.JLabel userinfolabel1;
+    private javax.swing.JTextPane userinfopane;
     private javax.swing.JLabel userlabel1;
     // End of variables declaration//GEN-END:variables
     private UserInfo user;
 
     private void initdata() {
-
-
         Thread t = new Thread(new Runnable() {
+
             public void run() {
-
+                photolabel1.setSize(150, 150);
                 photolabel1.setText("loading picuture...");
-                userinfolabel1.setText("loading user data...");
-                final int width = (int) photolabel1.getBounds().getSize().getWidth();
-                final int height = (int) photolabel1.getBounds().getSize().getHeight();
-                EventQueue.invokeLater(new Runnable() {
+                userinfopane.setText("loading user data...");
 
-                    public void run() {
-                        try {
-                            Image image = ImageIO.read(new File(user.getPhotopath()));
-                            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-                            Graphics g = bi.getGraphics();
-                            g.drawImage(image, 0, 0, width, height, null);
-                            photolabel1.setIcon(new ImageIcon(bi));
-                        } catch (IOException ex) {
-                            Logger.getLogger(UserInfoFrame.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                try {
+                    String photo = ClientContext.getDefaultPath();
+                    if (!StringHelper.isEmpty(user.getPhotopath())) {              
+                        photo = ClientContext.getUserFolder(user)+File.separator+StringHelper.getFileName(user.getPhotopath()) ;
                     }
-                });
+                    System.out.println(photo);
+                    photolabel1.setText(null);
+                    ImageHelper.paintImg(photolabel1, new File(photo));
+                } catch (IOException ex) {
+                    ClientContext.warnLog("userpanel::initdata()" + user.getUsername(), ex);
+                }
                 StringBuffer sb = new StringBuffer();
-                sb.append("<html><body>");
-                sb.append("UserId:" + user.getId() + "<br>");
-                sb.append("UserName:" + user.getUsername() + "<br>");
-                sb.append("birth:" + user.getBirthday() + "<br>");
+                
+                sb.append("UserId:" + user.getId() + "\r\n");
+                sb.append("UserName:" + user.getUsername() + "\r\n");
+                sb.append("birth:" + user.getBirthday() + "\r\n");
                 sb.append("address:" + user.getAddress());
-                sb.append("</body></html>");
-                userinfolabel1.setText(sb.toString());
+                userinfopane.setText(sb.toString());
             }
         });
         t.start();
-
     }
 }

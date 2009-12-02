@@ -7,7 +7,7 @@ package cititool.chat.server.handler;
 import cititool.chat.model.SystemConstants;
 import cititool.chat.server.*;
 import cititool.model.UserInfo;
-import java.io.IOException;
+import cititool.util.StringHelper;
 
 /**
  *
@@ -18,11 +18,10 @@ import java.io.IOException;
  */
 public class ServerDataHandler {
 
-    public static int MatchLogin(String user, String pass, String servername) throws IOException, ClassNotFoundException {
-
+    public static int MatchLogin(String user, String pass, String servername)  {
 
         UserInfo ui = ServerContext.getUserByUserName(user);
-        if (ui.getPass().equals(pass)) {
+        if (StringHelper.null2String(ui.getPass()).equals(pass)) {
             return SystemConstants.LOGON;
         } else {
             return SystemConstants.NOAUTHORIZE;

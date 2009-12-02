@@ -19,6 +19,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
@@ -47,6 +49,9 @@ public class MainServer extends Thread {
     private RegisterServer regServer;
     //login server
     private LoginServer loginServer;
+    
+
+    private ExecutorService acceptPool = Executors.newCachedThreadPool();
 
     public void updateTableModel() {
 
@@ -164,70 +169,80 @@ public class MainServer extends Thread {
         timer.schedule(task, 500, 1000 * 300);
     }
 
-
     public Map getSessionPool() {
         return pool;
     }
 
     @Override
     public synchronized void run() {
-        try {
-            //login accept thread...
-
-            statusOut(SystemConstants.Status.STARTED);
-            updateTableModel();
-            // scanpool();
-            Socket socket = null;
 
 
 
+        statusOut(SystemConstants.Status.STARTED);
+        updateTableModel();
+        //scanpool();
 
-            while (this.isAlive()) {
-                if (suspend) {
-                    this.wait();
-                }
+        while (this.isAlive()) {
+            if (suspend) {
                 try {
-                    socket = server.accept();
-                    Object content = TransProtocol.responseObject(socket);
-                    if (content instanceof String) {
-                        String t = content.toString();
-
-                        if (t.equals(TransProtocol.TESTH)) {
-                            // test connection...
-                            ServerContext.productServerLog("ip==>" + socket.getInetAddress().getHostAddress() + "  test==>", null);
-                            TransProtocol.writeStr(SystemConstants.TESTSUC + "", socket);
-                        } //registry server
-                        else if (t.startsWith(TransProtocol.REG_HEADER)) {
-                            if (regServer == null) {
-                                regServer = new RegisterServer(socket);
-                                regServer.start();
-                            }else{
-                                regServer.setSocket(socket);
-                            }
-                        } else if (t.startsWith(TransProtocol.LOGIN_HEADER)) {
-                            String[] part = t.substring(1).split(TransProtocol.SPLIT);
-                            if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
-                                TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
-                                ServerContext.productServerLog(part[0] + "==>login", null);
-                                SessionServer recv = new SessionServer(serverName,part[0], socket);
-                                pool.put(part[0], recv);
-                                recv.start();
-                            } else {
-                                TransProtocol.writeStr(SystemConstants.NOAUTHORIZE + "", socket);
-                            }
-                        }
-                    }
-                } catch (IOException ex) {
-                    //ServerContext.productServerLog("server socket exception", ex);
-                    //System.out.println("server socket exception" + ex.getMessage());
+                    this.wait();
+                } catch (InterruptedException ex) {
+                    ServerContext.warnServerLog("server main thread wait error:", ex);
+                     continue;
                 }
             }
+            Socket s = null;
+            try {
+                s = server.accept();
+            } catch (IOException ex) {
+                ServerContext.warnServerLog("server accept thread error:", ex);
+                continue;
+            }
 
-        } catch (InterruptedException ex) {
-            ServerContext.warnServerLog("server main thread error:", ex);
-        } catch (ClassNotFoundException ex) {
-            ServerContext.warnServerLog("server main thread error:", ex);
+            final Socket socket = s;
+            acceptPool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        Object content = TransProtocol.getObject(socket);
+                        if (content instanceof String) {
+                            String t = content.toString();
+
+                            if (t.equals(TransProtocol.TESTH)) {
+                                // test connection...
+                                ServerContext.productServerLog("ip==>" + socket.getInetAddress().getHostAddress() + "  test==>", null);
+                                TransProtocol.writeStr(SystemConstants.TESTSUC + "", socket);
+                            } //registry server
+                            else if (t.startsWith(TransProtocol.REG_HEADER)) {
+                                if (regServer == null) {
+                                    regServer = new RegisterServer(socket);
+                                    regServer.start();
+                                } else {
+                                    regServer.setSocket(socket);
+                                }
+                            } else if (t.startsWith(TransProtocol.LOGIN_HEADER)) {
+                                String[] part = t.substring(1).split(TransProtocol.SPLIT);
+                                if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
+                                    socket.setKeepAlive(true);
+                                    TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
+                                    ServerContext.productServerLog(part[0] + "==>login", null);
+                                    SessionServer recv = new SessionServer(serverName, part[0], socket);
+                                    pool.put(part[0], recv);
+                                    recv.start();
+                                } else {
+                                    TransProtocol.writeStr(SystemConstants.NOAUTHORIZE + "", socket);
+                                }
+                            } 
+                        }
+                    } catch (ClassNotFoundException ex) {
+                        ServerContext.warnServerLog("server execute thread error:", ex);
+                    } catch (IOException ex) {
+                        ServerContext.warnServerLog("server execute thread error:", ex);
+                    }
+                }
+            });
         }
+
+
     }
 
     private void statusOut(final Integer status) {

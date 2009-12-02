@@ -8,12 +8,14 @@ import cititool.adapter.FileTreeModel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -154,9 +156,9 @@ public class ComponentHelper {
         }
     }
 
-    public static void filePopup(JTextComponent text,String regKey,Preferences pref,Container container){
-       
-        JFileChooser  jc=new JFileChooser(text.getText());
+    public static void filePopup(JTextComponent text, String regKey, Preferences pref, Container container) {
+
+        JFileChooser jc = new JFileChooser(text.getText());
         jc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         if (jc.showOpenDialog(container) != JFileChooser.APPROVE_OPTION) {
             return;
@@ -185,16 +187,18 @@ public class ComponentHelper {
         return false;
     }
 
+
+
     public static class ComSearcher {
 
         private Component root;
         private Component result;
         private String name;
 
-        public  Component getComByName(Component root, String name) {
-            this.root=root;
-            this.name=name;
-            result=null;
+        public Component getComByName(Component root, String name) {
+            this.root = root;
+            this.name = name;
+            result = null;
             search(root);
             return result;
         }
@@ -208,7 +212,7 @@ public class ComponentHelper {
                 }
             } else {
                 if (com.getName().equals(name)) {
-                    result=com;
+                    result = com;
                     return;
                 }
             }

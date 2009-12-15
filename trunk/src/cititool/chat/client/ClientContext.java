@@ -9,6 +9,7 @@ import cititool.chat.model.UserClient;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
+import cititool.util.ReflectHelper;
 import cititool.util.StringHelper;
 import java.awt.Color;
 import java.io.File;
@@ -50,7 +51,7 @@ public class ClientContext {
 
     public static String getDefaultPath() {
 
-        return userpath+File.separator+defaultPath;
+        return userpath + File.separator + defaultPath;
     }
 
     public static void setCurSocket(Socket socket) {
@@ -87,47 +88,13 @@ public class ClientContext {
 
         userpath = path;
         File f = new File(path);
-        if(!f.exists())
-        f.mkdirs();
-
-    }
-
-    public static UserInfo loadUserInfotFromServer(String username) throws IOException, ClassNotFoundException {
-
-        Socket s = null;
-        if ((s = getCurrentSocket()) != null) {
-            TransProtocol.requestUserInfo(username, s);
-            UserInfo user = (UserInfo) TransProtocol.getObject(s);
-            return user;
-        } else {
-            return null;
+        if (!f.exists()) {
+            f.mkdirs();
         }
+
     }
 
-    public static void loadFileFromServer(String folder,String relativePath) throws IOException, ClassNotFoundException {
-        Socket s = null;
-        if ((s = getCurrentSocket()) != null) {
-            TransProtocol.requestFile(relativePath, s);
-            File f = new File(folder);
-            if (!f.exists()) {
-                f.mkdirs();
-            }
-             FileProcesser fp = new FileProcesser();
-             fp.readFile(folder, s);
-        }
-    }
 
-    public static Object[] loadUserListFromServer(String curuser) throws IOException, ClassNotFoundException {
-        Socket s = null;
-        if ((s = getCurrentSocket()) != null) {
-            TransProtocol.requestUserList(s);
-            Object[] userlist = (Object[]) TransProtocol.getObject(s);
-            return userlist;
-        } else {
-            String[] str = {};
-            return str;
-        }
-    }
 
     public static void setCacheInfo(String username, UserInfo user) {
 
@@ -144,7 +111,7 @@ public class ClientContext {
         try {
             TransProtocol.writeStr(TransProtocol.REG_HEADER, socket);
             TransProtocol.writeObj(user, socket);
-            
+
             if (!StringHelper.isEmpty(user.getPhotopath())) {
                 FileProcesser fp = new FileProcesser();
                 if (bar != null) {
@@ -161,9 +128,9 @@ public class ClientContext {
         logpane = log;
     }
 
-    public static void productLog(String str){
+    public static void productLog(String str) {
 
-         productLog(str,null);
+        productLog(str, null);
     }
 
     public static void productLog(String str, Exception ex) {
@@ -172,7 +139,7 @@ public class ClientContext {
             try {
                 if (ex != null) {
                     if (!StringHelper.isEmpty(str)) {
-                        str = str + ",";
+                        str = str + "," + ex;
                     } else {
                         str = "exception=>" + ex;
                     }
@@ -190,7 +157,7 @@ public class ClientContext {
             try {
                 if (ex != null) {
                     if (!StringHelper.isEmpty(str)) {
-                        str = str + ","+ex;
+                        str = str + "," + ex;
                     } else {
                         str = "exception=>" + ex;
                     }
@@ -202,30 +169,20 @@ public class ClientContext {
         }
     }
 
-    public static UserInfo loadTotalUserInfo(String username) throws IOException, ClassNotFoundException {
-        UserInfo user = null;
-        if ((user = getCacheInfo(username)) == null) {
-            user = loadUserInfotFromServer(username);
-            setCacheInfo(username, user);
-        }
-
-        //load picture
-        String folder = ClientContext.getUserPath() + File.separator + username;
-        String path = folder + File.separator + StringHelper.getFileName(user.getPhotopath()) ;
-
-        System.out.println("request pic path==>"+path);
-        File f = new File(path);
-        if (!f.exists()) {
-            loadFileFromServer(folder,username+File.separator+StringHelper.getFileName(user.getPhotopath()));
-        }
-        System.out.println("request pic over..");
-        return user;
-    }
-
     public static String getUserFolder(UserInfo user) {
 
         return ClientContext.getUserPath() + File.separator + user.getUsername();
     }
 
+    public static void requestFile(String relativePath, Socket s) throws IOException {
 
+       TransProtocol.writeStr(TransProtocol.REQUEST_FILE_H + relativePath, s);
+       TransProtocol.writeStr(TransProtocol.ISFILE_H, s);
+    }
+
+    public static void requestPic(String relativePath, Socket s) throws IOException {
+
+       TransProtocol.writeStr(TransProtocol.REQUEST_FILE_H + relativePath, s);
+       TransProtocol.writeStr(TransProtocol.USERPIC_H, s);
+    }
 }

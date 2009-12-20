@@ -8,22 +8,17 @@ import cititool.uicomponent.*;
 import cititool.MainApp;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
+import java.awt.Component;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -70,14 +65,22 @@ public class ChatUserinfoTabDef {
     }
 
     public UserPanel getCurrentPanel() {
+        Component com=tabbedPane.getSelectedComponent();
 
-        return (UserPanel) tabbedPane.getSelectedComponent();
+        if(com instanceof  UserPanel)
+           return (UserPanel)tabbedPane.getSelectedComponent();
+        else
+            return null;
     }
 
     public JTextPane getCurrentChatPane() {
 
         UserPanel p = getCurrentPanel();
-        JTextPane tp = (JTextPane) searcher.getComByName(p, "chatpane");
+        if(p==null) return null;
+        Object o= searcher.getComByName(p, "chatpane");
+        if(o==null) return null;
+
+        JTextPane tp = (JTextPane) o;
         return tp;
     }
 

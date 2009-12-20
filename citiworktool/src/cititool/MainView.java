@@ -1637,9 +1637,9 @@ public class MainView extends FrameView {
 
     private void chatroomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chatroomMenuItemActionPerformed
         // TODO add your handling code here:
-        if (chatroom == null) {
-            chatroom = new LoginFrame();
-        }
+
+        chatroom = new LoginFrame();
+        
         WindowHelper.showCenter(chatroom);
 
     }//GEN-LAST:event_chatroomMenuItemActionPerformed

@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -46,6 +47,7 @@ public class ChatServerFrame extends javax.swing.JFrame {
     /** Creates new form chatServer */
     public ChatServerFrame() {
         initComponents();
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initdata();
     }
 
@@ -760,11 +762,11 @@ public class ChatServerFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                ChatServerFrame dialog = new ChatServerFrame();
+              final ChatServerFrame dialog = new ChatServerFrame();
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
+                        dialog.dispose();
                     }
                 });
                 dialog.setVisible(true);

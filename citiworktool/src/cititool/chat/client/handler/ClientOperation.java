@@ -81,6 +81,16 @@ public class ClientOperation {
         handler.setUserpic(folder);
     }
 
+    public void openUserPane(String username) throws IOException, ClassNotFoundException {
+        loadTotalUser(username);
+        UserInfo userinfo = ClientContext.getCacheInfo(username);
+        if (userinfo != null) {
+            frame.getTab().addPanel(userinfo);
+            //get userinfo socket
+        }
+
+    }
+
     public void loadUserListFromServer(String curuser) throws IOException, ClassNotFoundException {
 
         TransProtocol.requestUserList(socket);

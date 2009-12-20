@@ -4,6 +4,7 @@
  */
 package test;
 
+import cititool.chat.protocol.TransProtocol;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -55,19 +56,21 @@ public class A {
     private ExecutorService pool = Executors.newCachedThreadPool();
 
     public static void main(String args[]) {
-        JFrame f = new JFrame();
-        f.setSize(200, 200);
-        Dimension d=new Dimension(100, 200);
-        JLabel p = new JLabel();
-        p.setLayout(new GridLayout(1, 2));
-        JLabel l1 = new JLabel("haha");
-        JLabel l2 = new JLabel("haha1");
-        p.setBorder(new LineBorder(Color.red));
-        l1.setBorder(new LineBorder(Color.blue));
-        l2.setBorder(new LineBorder(Color.yellow));
-        p.add(l1);
-        p.add(l2);
-        f.add(p);
-        f.setVisible(true);
+//        JFrame f = new JFrame();
+//        f.setSize(200, 200);
+//        Dimension d=new Dimension(100, 200);
+//        JLabel p = new JLabel();
+//        p.setLayout(new GridLayout(1, 2));
+//        JLabel l1 = new JLabel("haha");
+//        JLabel l2 = new JLabel("haha1");
+//        p.setBorder(new LineBorder(Color.red));
+//        l1.setBorder(new LineBorder(Color.blue));
+//        l2.setBorder(new LineBorder(Color.yellow));
+//        p.add(l1);
+//        p.add(l2);
+//        f.add(p);
+//        f.setVisible(true);
+         String[] s="brucexxg".split("g");
+         System.out.println(TransProtocol.SPLIT+","+s.length);
     }
 }

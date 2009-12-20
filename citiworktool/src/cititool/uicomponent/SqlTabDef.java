@@ -5,7 +5,8 @@
 package cititool.uicomponent;
 
 import cititool.MainApp;
-import java.awt.Font;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -22,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.border.LineBorder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -96,39 +98,40 @@ public class SqlTabDef {
 //            final JPanel clonepanel = (JPanel) SerializeHelper.deepClone(panel);
         //tabclosebuttonactive.icon
         JPanel tab = new JPanel();
+        tab.setLayout(new GridBagLayout());
         tab.setOpaque(false);
-        final JLabel tablabel = new JLabel("sql" + (++tabCounter));
-        final JLabel iconlabel = new JLabel();
-        tablabel.setFont(new Font(null, Font.PLAIN, 10));
-        iconlabel.setIcon(incloseIcon);
+        final JLabel tablabel = new JLabel("sql" + (++tabCounter)+"  ");
+        final JLabel iconlabel = new JLabel(incloseIcon);
         iconlabel.addMouseListener(new MouseAdapter() {
 
             public void mouseClicked(MouseEvent e) {
-                removeEvent(newPanel, tablabel.getText());
+                removeEvent(newPanel, tablabel.getText().trim());
             }
 
             public void mouseEntered(MouseEvent e) {
+                 iconlabel.setBorder(new LineBorder(Color.GRAY));
                 iconlabel.setIcon(closeIcon);
             }
 
             public void mouseExited(MouseEvent e) {
+                iconlabel.setBorder(null);
                 iconlabel.setIcon(incloseIcon);
             }
         });
         tab.add(tablabel);
         tab.add(iconlabel);
-        tab.addMouseListener(new MouseAdapter() {
-
-            /**
-             * add double click tab listener
-             */
-            public void mouseClicked(MouseEvent e) {
-                tabbedPane.setSelectedComponent(newPanel);
-                if (e.getClickCount() == 2) {
-                    removeEvent(newPanel, tablabel.getText());
-                }
-            }
-        });
+//        tab.addMouseListener(new MouseAdapter() {
+//
+//            /**
+//             * add double click tab listener
+//             */
+//            public void mouseClicked(MouseEvent e) {
+//                tabbedPane.setSelectedComponent(newPanel);
+//                if (e.getClickCount() == 2) {
+//                    removeEvent(newPanel, tablabel.getText());
+//                }
+//            }
+//        });
         tabbedPane.addTab(null, newPanel);
         tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1, tab);
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);

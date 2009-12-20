@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -241,15 +240,16 @@ public class UserInfoFrame extends javax.swing.JFrame {
             }
             //get user information
             TreePath path = getUserTree().getSelectionPath();
-            if(path==null)
-            return;
+            if (path == null) {
+                return;
+            }
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
             if (path != null && node.isLeaf()) {
                 if (evt.getButton() == MouseEvent.BUTTON1) {
                     if (evt.getClickCount() == 2) {
                         String username = node.getUserObject().toString();
-                        oper.loadTotalUser(username);
+                        getOper().loadTotalUser(username);
                         UserInfo user = ClientContext.getCacheInfo(username);
                         if (user != null) {
                             getTab().addPanel(user);
@@ -301,8 +301,8 @@ public class UserInfoFrame extends javax.swing.JFrame {
         try {
             DefaultTreeModel inittree = new DefaultTreeModel(new DefaultMutableTreeNode("loading user tree..."));
             getUserTree().setModel(inittree);
-            oper.loadUserListFromServer(curuser);
-            
+            getOper().loadUserListFromServer(curuser);
+
 
         } catch (IOException ex) {
             ClientContext.warnLog("fresh tree() ", ex);
@@ -341,11 +341,11 @@ public class UserInfoFrame extends javax.swing.JFrame {
 
 
         oper = new ClientOperation(ClientContext.getCurrentSocket(), this);
-        oper.setHandler(hander);
-        hander.setOperation(oper);
+        getOper().setHandler(hander);
+        hander.setOperation(getOper());
         try {
             //load self info
-            oper.loadTotalUser(curuser);
+            getOper().loadTotalUser(curuser);
             UserInfo current = ClientContext.getCacheInfo(curuser);
             ClientContext.setCurUserInfo(current);
             ClientContext.productLog("load self information over...", null);
@@ -380,5 +380,12 @@ public class UserInfoFrame extends javax.swing.JFrame {
      */
     public void setUserTree(javax.swing.JTree userTree) {
         this.userTree = userTree;
+    }
+
+    /**
+     * @return the oper
+     */
+    public ClientOperation getOper() {
+        return oper;
     }
 }

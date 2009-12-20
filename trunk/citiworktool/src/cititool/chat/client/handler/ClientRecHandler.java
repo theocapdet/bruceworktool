@@ -15,6 +15,7 @@ import cititool.util.ComponentHelper;
 import cititool.util.ReflectHelper;
 import java.io.IOException;
 import java.net.Socket;
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -53,12 +54,16 @@ public class ClientRecHandler extends Thread {
                         String p[] = t.substring(TransProtocol.TALK_REC_H.length()).split(TransProtocol.SPLIT);
                         String user = p[0];
                         String talk = p[1];
-                        ComponentHelper.chatDefined(frame.getTab().getCurrentChatPane(), user, SystemColor.BROWN_GREEN, true);
-                        ComponentHelper.chatDefined(frame.getTab().getCurrentChatPane(), SystemBlank.CONTENT_START + talk, SystemColor.DEFAULT, false);
-                        if(!frame.isFocused()){
+                        JTextPane cur = frame.getTab().getCurrentChatPane();
+                        if (cur == null) {
+                            oper.openUserPane(user);
+                            cur = frame.getTab().getCurrentChatPane();
+                        }
+                        ComponentHelper.chatDefined(cur, user, SystemColor.BROWN_GREEN, true);
+                        ComponentHelper.chatDefined(cur, SystemBlank.CONTENT_START + talk, SystemColor.DEFAULT, false);
+                        if (!frame.isFocused()) {
                             frame.setVisible(true);
                         }
-
 
                     } //load userinfo
                     else if (t.startsWith(TransProtocol.USERNAME_HEADER)) {

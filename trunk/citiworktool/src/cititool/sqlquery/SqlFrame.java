@@ -10,6 +10,7 @@
  */
 package cititool.sqlquery;
 
+import cititool.chat.model.SystemConstants.SystemColor;
 import cititool.uicomponent.SqlTabDef;
 import cititool.com.DBConn;
 import cititool.util.ComponentHelper;
@@ -22,12 +23,27 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /**
  *
@@ -65,14 +81,17 @@ public class SqlFrame extends javax.swing.JFrame {
         database = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         className = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        schema = new javax.swing.JTextField();
         testBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         logArea = new javax.swing.JTextArea();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         sqlTabPanel = new javax.swing.JTabbedPane();
         sqlPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jTextPane1 = new javax.swing.JTextPane();
         newBtn = new javax.swing.JButton();
         execBtn = new javax.swing.JButton();
         configBtn = new javax.swing.JButton();
@@ -82,6 +101,8 @@ public class SqlFrame extends javax.swing.JFrame {
         log = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         resultTab = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(SqlFrame.class);
         jDialog1.setTitle(resourceMap.getString("jDialog1.title")); // NOI18N
@@ -130,6 +151,17 @@ public class SqlFrame extends javax.swing.JFrame {
         className.setToolTipText(className.getText());
         className.setName("className"); // NOI18N
 
+        jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
+        jLabel8.setName("jLabel8"); // NOI18N
+
+        schema.setText(resourceMap.getString("schema.text")); // NOI18N
+        schema.setName("schema"); // NOI18N
+        schema.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                schemaPropertyChange(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -169,7 +201,12 @@ public class SqlFrame extends javax.swing.JFrame {
                                         .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                                 .addGap(43, 43, 43)))
-                        .addGap(194, 194, 194))))
+                        .addGap(194, 194, 194))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(schema, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,7 +235,11 @@ public class SqlFrame extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(className, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(schema, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         testBtn.setText(resourceMap.getString("testBtn.text")); // NOI18N
@@ -236,7 +277,7 @@ public class SqlFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(testBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -274,18 +315,18 @@ public class SqlFrame extends javax.swing.JFrame {
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
-        jTextArea1.setColumns(5);
-        jTextArea1.setFont(resourceMap.getFont("jTextArea1.font")); // NOI18N
-        jTextArea1.setForeground(resourceMap.getColor("jTextArea1.foreground")); // NOI18N
-        jTextArea1.setRows(5);
-        jTextArea1.setWrapStyleWord(true);
-        jTextArea1.setName("jTextArea1"); // NOI18N
-        jTextArea1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTextPane1.setName("jTextPane1"); // NOI18N
+        jTextPane1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextArea1MouseClicked(evt);
+                jTextPane1MouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(jTextArea1);
+        jTextPane1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextPane1KeyReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout sqlPanelLayout = new javax.swing.GroupLayout(sqlPanel);
         sqlPanel.setLayout(sqlPanelLayout);
@@ -295,9 +336,7 @@ public class SqlFrame extends javax.swing.JFrame {
         );
         sqlPanelLayout.setVerticalGroup(
             sqlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sqlPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
         );
 
         sqlTabPanel.addTab(resourceMap.getString("sqlPanel.TabConstraints.tabTitle"), sqlPanel); // NOI18N
@@ -380,6 +419,17 @@ public class SqlFrame extends javax.swing.JFrame {
             .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+        jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
+        jLabel7.setName("jLabel7"); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -391,7 +441,11 @@ public class SqlFrame extends javax.swing.JFrame {
                 .addComponent(execBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(configBtn)
-                .addContainerGap(655, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(28, 28, 28)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(433, Short.MAX_VALUE))
             .addComponent(sqlTabPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 904, Short.MAX_VALUE)
             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -401,7 +455,9 @@ public class SqlFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(newBtn)
                     .addComponent(execBtn)
-                    .addComponent(configBtn))
+                    .addComponent(configBtn)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel7))
                 .addGap(8, 8, 8)
                 .addComponent(sqlTabPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -444,13 +500,9 @@ public class SqlFrame extends javax.swing.JFrame {
         JPanel newPanel = new JPanel();
         newPanel.setLayout(new GridLayout(1, 1));
         JScrollPane sp = new JScrollPane();
-        final JTextArea ta = new JTextArea();
+        final JTextPane ta = new JTextPane();
         ta.setFont(new Font("Georgia", Font.BOLD, 12)); // NOI18N
         ta.setForeground(new Color(0, 23, 255)); // NOI18N
-        ta.setLineWrap(true);
-        ta.setWrapStyleWord(true);
-        ta.setColumns(5);
-        ta.setRows(5);
         ta.addMouseListener(new MouseAdapter() {
 
             public void mouseClicked(MouseEvent evt) {
@@ -473,7 +525,7 @@ public class SqlFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JPanel panel = (JPanel) sqlTabPanel.getSelectedComponent();
         JScrollPane sp = (JScrollPane) panel.getComponent(0);
-        JTextArea ta = (JTextArea) sp.getViewport().getComponent(0);
+        JTextPane ta = (JTextPane) sp.getViewport().getComponent(0);
         String t = "";
         if (ta.getSelectedText() == null) {
             t = ta.getText();
@@ -502,10 +554,62 @@ public class SqlFrame extends javax.swing.JFrame {
         ComponentHelper.clearPopup(evt, log);
     }//GEN-LAST:event_logMouseClicked
 
-    private void jTextArea1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextArea1MouseClicked
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        ComponentHelper.clearPopup(evt, jTextArea1);
-    }//GEN-LAST:event_jTextArea1MouseClicked
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextPane1MouseClicked
+        // TODO add your handling code here:
+        ComponentHelper.clearPopup(evt, jTextPane1);
+    }//GEN-LAST:event_jTextPane1MouseClicked
+
+    private void jTextPane1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextPane1KeyReleased
+        // TODO add your handling code here:
+
+        DefaultStyledDocument doc = (DefaultStyledDocument) jTextPane1.getDocument();
+        int len = doc.getLength();
+        String str = "";
+        try {
+            str = doc.getText(0, len).toLowerCase();
+        } catch (BadLocationException ex) {
+            Logger.getLogger(SqlFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        SimpleAttributeSet set = new SimpleAttributeSet();
+        StyleConstants.setForeground(set, Color.red);
+        StyleConstants.setBold(set, true);
+        for (Iterator<String> iter=keyword.iterator();iter.hasNext(); ) {
+            String substr = str;
+            String kword=iter.next();
+            System.out.println(kword);
+            int kl = kword.length();
+            int offset = -1;
+            int count = 0;
+            while ((offset = substr.indexOf(kword)) > -1) {
+                doc.setCharacterAttributes(offset + count * kl, kl, set, true);
+                substr = substr.substring(kl);
+                count++;
+            }
+        }
+
+        SimpleAttributeSet set1 = new SimpleAttributeSet();
+        StyleConstants.setForeground(set, Color.blue);
+        StyleConstants.setBold(set1, true);
+        
+        SimpleAttributeSet set2= new SimpleAttributeSet();
+        StyleConstants.setForeground(set, SystemColor.BROWN_GREEN);
+        StyleConstants.setBold(set2, true);
+        int s = str.indexOf("from ")+5;
+
+        
+
+    }//GEN-LAST:event_jTextPane1KeyReleased
+    
+
+
+    private void schemaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_schemaPropertyChange
+        // TODO add your handling code here:'
+        pref.put("schema", schema.getText());
+    }//GEN-LAST:event_schemaPropertyChange
 
     /**
      * @param args the command line arguments
@@ -519,11 +623,13 @@ public class SqlFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JTextField className;
     private javax.swing.JButton configBtn;
     private javax.swing.JTextField database;
     private javax.swing.JButton execBtn;
     private javax.swing.JTextField host;
+    private javax.swing.JButton jButton1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -531,6 +637,8 @@ public class SqlFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
@@ -540,13 +648,14 @@ public class SqlFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTextArea log;
     private javax.swing.JTextArea logArea;
     private javax.swing.JButton newBtn;
     private javax.swing.JPasswordField pass;
     private javax.swing.JTextField port;
     private javax.swing.JTable resultTab;
+    private javax.swing.JTextField schema;
     private javax.swing.JPanel sqlPanel;
     private javax.swing.JTabbedPane sqlTabPanel;
     private javax.swing.JButton testBtn;
@@ -554,9 +663,23 @@ public class SqlFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     private SqlTabDef close;
     private DBConn conn;
+    private Preferences pref;
+    private static List<String> keyword = new Vector<String>();
+    private static String tablebef[] ={"set","from","into"};
+
 
     private void initdata() {
         close = new SqlTabDef(sqlTabPanel, newBtn);
+        pref = Preferences.userRoot().node("/com/cititoolkit/sql");
+        if (!pref.get("schema", "").equals("")) {
+            schema.setText(pref.get("schema", ""));
+        }
+        jTextPane1.setFont(new Font("Georgia", Font.BOLD, 12)); // NOI18N
+        jTextPane1.setForeground(new Color(0, 23, 255)); // NOI18N
+
+        String[] def = {" select ", " update ", " delete ", " insert ",
+            " from ", " values ", " exists ", " in ", " or "};
+        keyword.addAll(Arrays.asList(def));
 
         log.setForeground(Color.blue);
 
@@ -569,6 +692,7 @@ public class SqlFrame extends javax.swing.JFrame {
         String url = "jdbc:db2://" + host + ":" + port + "/" + database;
         conn = new DBConn(className, url, username, pass);
         this.addWindowListener(new WindowAdapter() {
+
             @Override
             public void windowClosed(WindowEvent e) {
                 conn.closeConn();
@@ -578,6 +702,7 @@ public class SqlFrame extends javax.swing.JFrame {
 
     private void query(final String sql) {
         EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 int count = conn.getNumber(sql);
                 ComponentHelper.jtaAppendLine(log, "total number :" + count);

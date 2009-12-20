@@ -49,8 +49,6 @@ public class MainServer extends Thread {
     private RegisterServer regServer;
     //login server
     private LoginServer loginServer;
-    
-
     private ExecutorService acceptPool = Executors.newCachedThreadPool();
 
     public void updateTableModel() {
@@ -188,7 +186,7 @@ public class MainServer extends Thread {
                     this.wait();
                 } catch (InterruptedException ex) {
                     ServerContext.warnServerLog("server main thread wait error:", ex);
-                     continue;
+                    continue;
                 }
             }
             Socket s = null;
@@ -201,6 +199,7 @@ public class MainServer extends Thread {
 
             final Socket socket = s;
             acceptPool.execute(new Runnable() {
+
                 public void run() {
                     try {
                         Object content = TransProtocol.getObject(socket);
@@ -223,11 +222,16 @@ public class MainServer extends Thread {
                                 String[] part = t.substring(1).split(TransProtocol.SPLIT);
                                 if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
                                     socket.setKeepAlive(true);
-                                    TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
-                                    ServerContext.productServerLog(part[0] + "==>login", null);
-                                    SessionServer recv = new SessionServer(serverName, part[0], socket);
-                                    pool.put(part[0], recv);
-                                    recv.start();
+                                    if (ServerContext.getUserByUserName(part[0]).getUsername() != null) {
+                                        TransProtocol.writeStr(SystemConstants.EXISTS + "", socket);
+
+                                    } else {
+                                        TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
+                                        ServerContext.productServerLog(part[0] + "==>login", null);
+                                        SessionServer recv = new SessionServer(serverName, part[0], socket);
+                                        pool.put(part[0], recv);
+                                        recv.start();
+                                    }
                                 } else {
                                     TransProtocol.writeStr(SystemConstants.NOAUTHORIZE + "", socket);
                                 }

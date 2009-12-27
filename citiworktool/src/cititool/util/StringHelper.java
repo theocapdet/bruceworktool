@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -70,7 +71,7 @@ public class StringHelper {
 
     public static String[] split(String srcString, String regex) throws Exception {
         if (!(regex != null && regex.length() > 0)) {
-            throw new Exception("请输入分隔符！");
+            throw new Exception("plz input ther split operate");
         }
         StringTokenizer stk = null;
         if (srcString.length() == 0) {
@@ -1028,36 +1029,81 @@ public class StringHelper {
         return String2Int(str);
     }
 
-    public  static String str2Unicode(String str) {
-        StringBuilder sb=new StringBuilder();
-        for (int i = 0,len=str.length(); i <len; i++) {
-            char c =  str.charAt(i);
-            int n=(char)c;
-            if((n>0x4E00 && n<0x9FA5) || (n>0xF900 &&n<0xF900)){
+    public static String str2Unicode(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, len = str.length(); i < len; i++) {
+            char c = str.charAt(i);
+            int n = (char) c;
+            if ((n > 0x4E00 && n < 0x9FA5) || (n > 0xF900 && n < 0xF900)) {
                 sb.append("\\u" + Integer.toHexString(n));
-            }else{
+            } else {
                 sb.append(c);
             }
         }
         return sb.toString();
     }
 
-    public static String getFieldMethod(String prefix,String field){
-        field=field.substring(0,1).toUpperCase()+field.substring(1);
-        return prefix+field;
+    public static String getFieldMethod(String prefix, String field) {
+        field = field.substring(0, 1).toUpperCase() + field.substring(1);
+        return prefix + field;
     }
 
-    public static String UUID(){
+    public static String UUID() {
 
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public static String getFileName(String path){
+    public static String getFileName(String path) {
 
-        return  path.substring(path.lastIndexOf(File.separator)+1);
+        return path.substring(path.lastIndexOf(File.separator) + 1);
     }
 
+    /**
+     *
+     * @param str  string
+     * @param s start position
+     * @param d from start position the char to split the str
+     * @param e from start position the char to end the str
+     * @return
+     */
+    public static List getStrForward(String str, int s, char d, char e) {
+
+        List re = new ArrayList();
+        int count = 0;
+        String sub = "";
+        int[] pos = new int[2];
+        int len = str.length();
+        for (int i = s; i < len; i++) {
+            char t = str.charAt(i);
+            if (t == ' ' || t == d || t == e) {
+                if (count > 0) {
+                    pos[1] = i;
+                    re.add(pos);
+                }
+                count = 0;
+                if(t==e)
+                    break;
+            } else {
+                if (count == 0) {
+                    pos = new int[2];
+                    pos[0] = i;
+                }
+                count++;
+            }
+        }
+
+        return re;
+    }
 
     public static void main(String args[]) {
+
+        String str="select * from test as A,test1 as A2 where ";
+        int k=str.indexOf("from ")+5;
+        System.out.println(str.substring(k));
+        List list=getStrForward(str,k , ',',' ');
+        for(int i=0;i<list.size();i++){
+             int[] pos=(int[])list.get(i);
+             System.out.println(str.substring(pos[0],pos[1]));
+        }
     }
 }

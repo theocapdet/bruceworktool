@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -58,14 +59,15 @@ public class ComponentHelper {
         jtp.setCaretPosition(doc.getLength());
     }
 
-    public static void chatDefined(JTextPane jtp, String str, Color color,boolean appendTime) throws BadLocationException{
-            Document doc = jtp.getDocument();
+    public static void chatDefined(JTextPane jtp, String str, Color color, boolean appendTime) throws BadLocationException {
+        Document doc = jtp.getDocument();
         SimpleAttributeSet set = new SimpleAttributeSet();
         StyleConstants.setForeground(set, color);
-        if( appendTime)
-             doc.insertString(doc.getLength(), str+"  "+DateHelper.getCurDateTime()   + "\n", set);
-        else
-             doc.insertString(doc.getLength(),  str + "\n", set);
+        if (appendTime) {
+            doc.insertString(doc.getLength(), str + "  " + DateHelper.getCurDateTime() + "\n", set);
+        } else {
+            doc.insertString(doc.getLength(), str + "\n", set);
+        }
         jtp.setCaretPosition(doc.getLength());
 
     }
@@ -199,13 +201,51 @@ public class ComponentHelper {
         return false;
     }
 
+    public static class TreeNodeSearcher {
+
+        private DefaultMutableTreeNode node;
+        private String kword;
+
+        public TreeNodeSearcher(String kword) {
+            this.kword = kword;
+        }
+
+        public DefaultMutableTreeNode searchTree(DefaultMutableTreeNode root) {
+            searchInTree(root);
+            return node;
+        }
+
+        private void searchInTree(DefaultMutableTreeNode p) {
+            if (p.isLeaf() && p.toString().equals(kword)) {
+                node = p;
+                return;
+            } else {
+                for (int i = 0, len = p.getChildCount(); i < len; i++) {
+                    DefaultMutableTreeNode n = (DefaultMutableTreeNode) p.getChildAt(i);
+                    searchInTree(n);
+                }
+            }
+        }
+    }
+
+    public static JComponent getSubComByName(ComSearcher searcher, JComponent p, String name) {
+        if (p == null) {
+            return null;
+        }
+        JComponent o = searcher.getComByName(p,name);
+        if (o == null) {
+            return null;
+        }      
+        return o;
+    }
+
     public static class ComSearcher {
 
-        private Component root;
-        private Component result;
+        private JComponent root;
+        private JComponent result;
         private String name;
 
-        public Component getComByName(Component root, String name) {
+        public JComponent getComByName(JComponent root, String name) {
             this.root = root;
             this.name = name;
             result = null;
@@ -213,7 +253,7 @@ public class ComponentHelper {
             return result;
         }
 
-        private void search(Component com) {
+        private void search(JComponent com) {
             if (com != null) {
                 if (com.getName() != null && com.getName().equals(name)) {
                     result = com;
@@ -222,7 +262,7 @@ public class ComponentHelper {
             }
             if (com instanceof Container) {
                 Container p = (Container) com;
-                Component[] child = p.getComponents();
+                JComponent[] child = (JComponent[]) p.getComponents();
                 for (int i = 0; i < child.length; i++) {
                     search(child[i]);
                 }

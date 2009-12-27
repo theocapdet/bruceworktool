@@ -5,7 +5,6 @@
 package cititool.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,7 @@ public class FileHelper {
         String resource = clz.getResource("/").toString();
         resource = resource.substring(6);
         String packagePath = clz.getPackage().getName();
-        packagePath = packagePath.replaceAll("\\.", "/");
+        packagePath = packagePath.replaceAll("//.", "/");
         return resource + packagePath + "/";
     }
 
@@ -110,13 +109,68 @@ public class FileHelper {
         return f;
     }
 
+    public static class FileCounter {
 
+        private List<File> con = new ArrayList<File>();
+        private List<File> rootlist = new ArrayList<File>();
+        private int max = -1;
+        private boolean flag = false;
 
+        public FileCounter(File root) {
+            rootlist.add(root);
+        }
 
+        public FileCounter(List<File> list) {
+            rootlist.addAll(list);
+        }
+
+        public FileCounter(File root, int max) {
+            rootlist.add(root);
+            this.max = max;
+        }
+
+        public FileCounter(List<File> list, int max) {
+            rootlist.addAll(list);
+            this.max = max;
+        }
+
+        public boolean search() {
+            con.clear();
+            for (int i = 0; i < rootlist.size(); i++) {
+                searchFolder(rootlist.get(i));
+            }
+            return flag;
+        }
+
+        private void searchFolder(File f) {
+            if (f.isDirectory()) {
+                File[] ls = f.listFiles();
+                for (int i = 0; i < ls.length; i++) {
+                    searchFolder(ls[i]);
+                }
+            } else {
+                if (con.size() >= max && max != -1) {
+                    flag = true;
+                    return;
+                }
+                con.add(f);
+            }
+        }
+        public List<File> getTotalFiles(){
+
+            return con;
+        }
+
+    }
 
     public static void main(String args[]) {
 
-        FileHelper f = new FileHelper();
-        System.out.println(getClassFilePath(f.getClass()));
+        List<File> f=new ArrayList<File>();
+        f.add(new File("C:/Documents and Settings/ZX04741/Desktop/New Folder (2)"));
+        f.add(new File("C:/Documents and Settings/ZX04741/Desktop/tmp"));
+        FileCounter con=new FileCounter(
+                f,3);
+        con.search();
+        System.out.println(con.getTotalFiles().size());
     }
 }

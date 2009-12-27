@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JProgressBar;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -119,6 +121,7 @@ public class ClientContext {
                 }
                 fp.writeFile(new File(user.getPhotopath()), socket);
             }
+        } catch (InterruptedException ex) {
         } catch (IOException ex) {
         }
 
@@ -172,6 +175,11 @@ public class ClientContext {
     public static String getUserFolder(UserInfo user) {
 
         return ClientContext.getUserPath() + File.separator + user.getUsername();
+    }
+
+    public static String getCurrentUserFolder(){
+
+        return getUserFolder(currentUser.getUser());
     }
 
     public static void requestFile(String relativePath, Socket s) throws IOException {

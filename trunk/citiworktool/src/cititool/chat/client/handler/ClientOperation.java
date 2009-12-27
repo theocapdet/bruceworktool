@@ -5,6 +5,7 @@
 package cititool.chat.client.handler;
 
 import cititool.chat.client.ClientContext;
+import cititool.chat.client.UI.RemindMsgFrame;
 import cititool.chat.client.UI.UserInfoFrame;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
@@ -13,6 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Semaphore;
+import javax.swing.JTextPane;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.html.HTMLDocument;
 
 /**
  *
@@ -52,15 +56,15 @@ public class ClientOperation {
         String folder = ClientContext.getUserPath() + File.separator + username;
         String path = folder + File.separator + StringHelper.getFileName(user.getPhotopath());
 
-        System.out.println("request pic path==>" + path);
+//        System.out.println("request pic path==>" + path);
         File f = new File(path);
         if (!f.exists()) {
             loadFileFromServer(folder, username + File.separator + StringHelper.getFileName(user.getPhotopath()));
         } else {
             unlock();
         }
-
-        System.out.println("request pic over..");
+        ClientContext.productLog("request pic over..");
+//        System.out.println("request pic over..");
     }
 
     public void loadUserInfotFromServer(String username) throws IOException, ClassNotFoundException {
@@ -94,6 +98,16 @@ public class ClientOperation {
     public void loadUserListFromServer(String curuser) throws IOException, ClassNotFoundException {
 
         TransProtocol.requestUserList(socket);
+    }
+
+    public void popupMsg(String t) throws IOException, ClassNotFoundException {
+
+        String title = t.substring(TransProtocol.POPMSG_H.length());
+        HTMLDocument document = (HTMLDocument) TransProtocol.getObject(socket);
+        RemindMsgFrame frame = new RemindMsgFrame(title);
+        JTextPane textpane = frame.getContent();
+        textpane.setDocument(document);
+        textpane.repaint();
     }
 
     public void lock() throws InterruptedException {

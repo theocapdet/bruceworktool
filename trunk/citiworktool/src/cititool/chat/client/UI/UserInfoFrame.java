@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -127,7 +128,8 @@ public class UserInfoFrame extends javax.swing.JFrame {
         serverlistLayout.setHorizontalGroup(
             serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, serverlistLayout.createSequentialGroup()
-                .addComponent(storefolder, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                .addContainerGap(17, Short.MAX_VALUE)
+                .addComponent(storefolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addContainerGap())
@@ -358,6 +360,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         //load online info
         freshtree();
         ClientContext.productLog("load online over", null);
+        
 
     }
 
@@ -387,5 +390,11 @@ public class UserInfoFrame extends javax.swing.JFrame {
      */
     public ClientOperation getOper() {
         return oper;
+    }
+
+
+    public JPanel getWorkArea(){
+
+        return tab.getWorkArea();
     }
 }

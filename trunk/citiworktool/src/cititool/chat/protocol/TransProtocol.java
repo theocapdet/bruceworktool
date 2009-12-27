@@ -4,9 +4,7 @@
  */
 package cititool.chat.protocol;
 
-import cititool.model.UserInfo;
 import cititool.util.ImageHelper;
-import cititool.util.StringHelper;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -47,6 +45,15 @@ public class TransProtocol {
     public final static String REQUEST_FILE_H=((char) 0xff52) + "";
     public final static String USERPIC_H=((char) 0xff53) + "";
     public final static String ISFILE_H=((char) 0xff54) + "";
+    public final static String TRANSFER_FH=((char) 0xff56) + "";
+    public final static String READY_TRANSFER_FH=((char) 0xff57) + "";
+    public final static String START_TRANSFER_FH=((char) 0xff58) + "";
+
+    public final static String ONLINE_H=((char) 0xff66) + "";
+    public final static String OFFLINE_H=((char)0xff68)+"";
+
+    public final static String POPMSG_H=((char)0xff70)+"";
+
 
     public final static String ERROR = (char) 0xffff + "";
 
@@ -82,8 +89,8 @@ public class TransProtocol {
          oos.writeLong(fsize);
          oos.writeInt(bz);
          oos.writeLong(count);
-         System.out.println("file size==>"+fsize);
-         System.out.println("count==>"+count);
+//         System.out.println("file size==>"+fsize);
+//         System.out.println("count==>"+count);
          byte[] buffer;
          FileInputStream fis=new FileInputStream(f);
          for(long i=0;i<count;i++){
@@ -109,12 +116,12 @@ public class TransProtocol {
        
         int bz=ois.readInt();
         long count=ois.readLong();
-        System.out.println("file size===>"+fsize);
-        System.out.println("count==>"+count);
+//        System.out.println("file size===>"+fsize);
+//        System.out.println("count==>"+count);
         byte[] buffer;
         FileOutputStream fos=new FileOutputStream(new File(filefolder+filename));
         if(header.equals(FILE_H)){
-            System.out.println("filepath===>"+filepath);
+//            System.out.println("filepath===>"+filepath);
             for(long i=0;i<count;i++){
                 buffer=new byte[bz];
                 buffer=(byte[])ois.readObject();

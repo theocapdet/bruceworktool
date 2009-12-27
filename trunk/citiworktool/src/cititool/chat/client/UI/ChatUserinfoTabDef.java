@@ -65,23 +65,32 @@ public class ChatUserinfoTabDef {
     }
 
     public UserPanel getCurrentPanel() {
-        Component com=tabbedPane.getSelectedComponent();
-
-        if(com instanceof  UserPanel)
-           return (UserPanel)tabbedPane.getSelectedComponent();
-        else
+        Component com = tabbedPane.getSelectedComponent();
+        if (com instanceof UserPanel) {
+            return (UserPanel) tabbedPane.getSelectedComponent();
+        } else {
             return null;
+        }
     }
 
     public JTextPane getCurrentChatPane() {
-
         UserPanel p = getCurrentPanel();
-        if(p==null) return null;
-        Object o= searcher.getComByName(p, "chatpane");
-        if(o==null) return null;
+        JComponent com = searcher.getComByName(p, "chatpane");
+        if (com == null) {
+            return null;
+        } else {
+            return (JTextPane) com;
+        }
+    }
 
-        JTextPane tp = (JTextPane) o;
-        return tp;
+    public JPanel getWorkArea() {
+        UserPanel p = getCurrentPanel();
+        JComponent com = searcher.getComByName(p, "workarea");
+        if (com == null) {
+            return null;
+        } else {
+            return (JPanel) com;
+        }
     }
 
     public void addPanel(UserInfo user) {
@@ -91,12 +100,12 @@ public class ChatUserinfoTabDef {
             return;
         }
         final UserPanel newpanel = new UserPanel(user);
-        JPanel tab=new JPanel();
+        JPanel tab = new JPanel();
         tab.setLayout(new GridBagLayout());
         tab.setOpaque(false);
-        final JLabel tablabel = new JLabel(user.getUsername()+"   ");
+        final JLabel tablabel = new JLabel(user.getUsername() + "   ");
         final JLabel iconlabel = new JLabel(incloseIcon);
-        
+
         iconlabel.addMouseListener(new MouseAdapter() {
 
             public void mouseClicked(MouseEvent e) {

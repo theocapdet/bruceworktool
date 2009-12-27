@@ -7,14 +7,16 @@ package cititool.chat.server.handler;
 import cititool.chat.model.SystemConstants;
 import cititool.chat.protocol.TransProtocol;
 import cititool.chat.server.ServerContext;
+import cititool.chat.server.util.ServerUtils;
 import cititool.util.ComponentHelper;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -26,6 +28,9 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -107,7 +112,6 @@ public class MainServer extends Thread {
     }
 
     public void buildServer() {
-
         try {
             if (server == null || (server != null && server.isClosed())) {
                 server = new ServerSocket(port);
@@ -115,7 +119,6 @@ public class MainServer extends Thread {
         } catch (IOException ex) {
             ServerContext.warnServerLog(serverName + "build error:", ex);
         }
-
     }
 
     public void stopServer(boolean isTerminated) {
@@ -124,18 +127,16 @@ public class MainServer extends Thread {
                 server.close();
                 statusOut(SystemConstants.Status.STOPING);
                 while (!server.isClosed()) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    Thread.sleep(100);
                 }
                 statusOut(SystemConstants.Status.STOPED);
                 if (!isTerminated) {
                     suspend = true;
                 }
             } catch (IOException ex) {
-                Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
+                ServerContext.warnDBLog("stopServer error:", ex);
+            } catch (InterruptedException ex) {
+                ServerContext.warnDBLog("stopServer error:", ex);
             }
             updateTableModel();
         }
@@ -173,9 +174,6 @@ public class MainServer extends Thread {
 
     @Override
     public synchronized void run() {
-
-
-
         statusOut(SystemConstants.Status.STARTED);
         updateTableModel();
         //scanpool();
@@ -189,6 +187,7 @@ public class MainServer extends Thread {
                     continue;
                 }
             }
+
             Socket s = null;
             try {
                 s = server.accept();
@@ -196,12 +195,12 @@ public class MainServer extends Thread {
                 ServerContext.warnServerLog("server accept thread error:", ex);
                 continue;
             }
-
             final Socket socket = s;
             acceptPool.execute(new Runnable() {
 
                 public void run() {
                     try {
+
                         Object content = TransProtocol.getObject(socket);
                         if (content instanceof String) {
                             String t = content.toString();
@@ -222,9 +221,8 @@ public class MainServer extends Thread {
                                 String[] part = t.substring(1).split(TransProtocol.SPLIT);
                                 if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {
                                     socket.setKeepAlive(true);
-                                    if (ServerContext.getUserByUserName(part[0]).getUsername() != null) {
+                                    if (pool.get(part[0]) != null) {
                                         TransProtocol.writeStr(SystemConstants.EXISTS + "", socket);
-
                                     } else {
                                         TransProtocol.writeStr(SystemConstants.LOGON + "", socket);
                                         ServerContext.productServerLog(part[0] + "==>login", null);
@@ -232,6 +230,9 @@ public class MainServer extends Thread {
                                         pool.put(part[0], recv);
                                         recv.start();
                                     }
+                                    //remind online
+                                    ServerUtils.sendAll(TransProtocol.ONLINE_H, part[0], pool, part[0]);
+                                    ServerUtils.remindAll(TransProtocol.POPMSG_H, pool, part[0], "remind message", part[0] + " is online now!");
                                 } else {
                                     TransProtocol.writeStr(SystemConstants.NOAUTHORIZE + "", socket);
                                 }

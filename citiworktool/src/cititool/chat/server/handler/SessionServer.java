@@ -6,6 +6,7 @@ package cititool.chat.server.handler;
 
 import cititool.chat.protocol.TransProtocol;
 import cititool.chat.server.ServerContext;
+import cititool.chat.server.util.ServerUtils;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class SessionServer extends Server {
     private String username;
     private Map<String, SessionServer> pool;
     //file transport server
-    private FileTransServer fileServer;
+    private static FileServer fileServer;
 
     public SessionServer(String serverName, String username, Socket socket) {
         super(socket, serverName);
@@ -102,11 +103,26 @@ public class SessionServer extends Server {
                 } else if (t.startsWith(TransProtocol.REQUEST_FILE_H)) {
                     String file = t.substring(TransProtocol.REQUEST_FILE_H.length());
                     if (fileServer == null) {
-                        fileServer = new FileTransServer(socket, file);
-                        fileServer.start();
-                    } else {
-                        fileServer.setSocket(socket, file);
+                        fileServer = new FileServer();
+                    }  
+                    fileServer.addTask(socket, file);                  
+                }
+                //tranfer file to others
+                else if(t.startsWith(TransProtocol.TRANSFER_FH)){
+                    String[]  tmp= t.substring(TransProtocol.TRANSFER_FH.length()).split(TransProtocol.SPLIT);
+                    String recv=tmp[0];
+                    String file=tmp[1];
+                    Socket sock=pool.get(recv).getSocket();
+                    fileServer.addTask(socket, sock, file);
+                }
+                else if(t.startsWith(TransProtocol.OFFLINE_H)){
+                    try {
+                        ServerUtils.sendAll(TransProtocol.OFFLINE_H, username, pool,username);
+                        ServerUtils.remindAll(TransProtocol.POPMSG_H, pool, username, "remind message", username + " is offline now!");
+                    } catch (IOException ex) {
+                       ServerContext.warnServerLog("SessionServer user exit error:", ex);
                     }
+                    break;
                 }
             }
         }

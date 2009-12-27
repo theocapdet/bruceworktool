@@ -11,20 +11,36 @@
 package cititool.chat.client.UI;
 
 import cititool.chat.client.ClientContext;
+import cititool.chat.client.handler.SenderFileJob;
 import cititool.chat.model.SystemConstants.SystemBlank;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
+import cititool.util.FileHelper.FileCounter;
 import cititool.util.ImageHelper;
 import cititool.util.StringHelper;
+import cititool.util.SwingThreadPool;
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.text.BadLocationException;
-import static  cititool.chat.model.SystemConstants.SystemColor;
+import static cititool.chat.model.SystemConstants.SystemColor;
 
 /**
  *
@@ -59,8 +75,8 @@ public class UserPanel extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         inputtext = new javax.swing.JTextPane();
         jButton1 = new javax.swing.JButton();
-        facearea1 = new javax.swing.JPanel();
-        userlabel1 = new javax.swing.JLabel();
+        workarea = new javax.swing.JPanel();
+        headerMsg = new javax.swing.JLabel();
         jSplitPane5 = new javax.swing.JSplitPane();
         chatinfoarea1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -139,27 +155,29 @@ public class UserPanel extends javax.swing.JPanel {
 
         inputsplitpane1.setLeftComponent(inputarea1);
 
-        facearea1.setName("facearea1"); // NOI18N
-        facearea1.setPreferredSize(new java.awt.Dimension(190, 99));
+        workarea.setAutoscrolls(true);
+        workarea.setName("workarea"); // NOI18N
+        workarea.setPreferredSize(new java.awt.Dimension(190, 99));
 
-        userlabel1.setBackground(resourceMap.getColor("userlabel1.background")); // NOI18N
-        userlabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        userlabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        userlabel1.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("userlabel1.border.lineColor"), 1, true)); // NOI18N
-        userlabel1.setName("userlabel1"); // NOI18N
+        headerMsg.setForeground(resourceMap.getColor("headerMsg.foreground")); // NOI18N
+        headerMsg.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        headerMsg.setText(resourceMap.getString("headerMsg.text")); // NOI18N
+        headerMsg.setName("headerMsg"); // NOI18N
 
-        javax.swing.GroupLayout facearea1Layout = new javax.swing.GroupLayout(facearea1);
-        facearea1.setLayout(facearea1Layout);
-        facearea1Layout.setHorizontalGroup(
-            facearea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(userlabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+        javax.swing.GroupLayout workareaLayout = new javax.swing.GroupLayout(workarea);
+        workarea.setLayout(workareaLayout);
+        workareaLayout.setHorizontalGroup(
+            workareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(headerMsg, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
         );
-        facearea1Layout.setVerticalGroup(
-            facearea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(userlabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+        workareaLayout.setVerticalGroup(
+            workareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(workareaLayout.createSequentialGroup()
+                .addComponent(headerMsg, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(156, Short.MAX_VALUE))
         );
 
-        inputsplitpane1.setRightComponent(facearea1);
+        inputsplitpane1.setRightComponent(workarea);
 
         javax.swing.GroupLayout inputArea1Layout = new javax.swing.GroupLayout(inputArea1);
         inputArea1.setLayout(inputArea1Layout);
@@ -269,9 +287,9 @@ public class UserPanel extends javax.swing.JPanel {
         try {
             Socket socket = ClientContext.getCurrentSocket();
             UserInfo curuser = ClientContext.getCurrentUserInfo();
-            ComponentHelper.chatDefined(chatpane, curuser.getUsername(),SystemColor.BROWN_GREEN , true);
-            ComponentHelper.chatDefined(chatpane,SystemBlank.CONTENT_START+ inputtext.getText(),SystemColor.DEFAULT , false);
-            TransProtocol.sendTalk(inputtext.getText()+"\r\n", user.getUsername(), socket);
+            ComponentHelper.chatDefined(chatpane, curuser.getUsername(), SystemColor.BROWN_GREEN, true);
+            ComponentHelper.chatDefined(chatpane, SystemBlank.CONTENT_START + inputtext.getText(), SystemColor.DEFAULT, false);
+            TransProtocol.sendTalk(inputtext.getText() + "\r\n", user.getUsername(), socket);
             inputtext.setText("");
         } catch (BadLocationException ex) {
             ex.printStackTrace();
@@ -283,7 +301,7 @@ public class UserPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chatinfoarea1;
     private javax.swing.JTextPane chatpane;
-    private javax.swing.JPanel facearea1;
+    private javax.swing.JLabel headerMsg;
     private javax.swing.JPanel inputArea1;
     private javax.swing.JPanel inputarea1;
     private javax.swing.JSplitPane inputsplitpane1;
@@ -297,12 +315,15 @@ public class UserPanel extends javax.swing.JPanel {
     private javax.swing.JLabel photolabel1;
     private javax.swing.JPanel userinfo1;
     private javax.swing.JTextPane userinfopane;
-    private javax.swing.JLabel userlabel1;
+    private javax.swing.JPanel workarea;
     // End of variables declaration//GEN-END:variables
     private UserInfo user;
+    private DropTarget dropTarget;
+    private ExecutorService uploadpool;
 
     private void initdata() {
-        Thread t = new Thread(new Runnable() {
+        uploadpool=Executors.newFixedThreadPool(20);
+        SwingThreadPool.execute(new Runnable() {
 
             public void run() {
                 photolabel1.setText("loading picuture...");
@@ -325,8 +346,58 @@ public class UserPanel extends javax.swing.JPanel {
                 sb.append("birth:" + user.getBirthday() + "\r\n");
                 sb.append("address:" + user.getAddress());
                 userinfopane.setText(sb.toString());
+
+                //drop and drag
+                dropTarget = new DropTarget(inputtext, new DropTargetAdapter() {
+
+                    public boolean isDragAcceptable(DropTargetDragEvent event) {
+                        return (event.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) != 0;
+                    }
+
+                    public boolean isDropAcceptable(DropTargetDropEvent event) {
+                        return (event.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) != 0;
+                    }
+
+                    public void drop(DropTargetDropEvent event) {
+                        if (!isDropAcceptable(event)) {
+                            event.rejectDrop();
+                            JOptionPane.showMessageDialog(getRootPane(), "can't drop acceptable");
+                            ClientContext.productLog("can't drop acceptable");
+                            return;
+                        }
+                        event.acceptDrop(DnDConstants.ACTION_COPY);
+                        Transferable transferable = event.getTransferable();
+                        DataFlavor[] flavors = transferable.getTransferDataFlavors();
+                        FileCounter counter = null;
+                        try {
+                            for (int i = 0; i < flavors.length; i++) {
+                                DataFlavor d = flavors[i];
+                                if (d.equals(DataFlavor.javaFileListFlavor)) {
+                                    List fileList = new ArrayList();
+                                    fileList = (List) transferable.getTransferData(d);
+                                    counter = new FileCounter(fileList);
+                                    counter.search();
+                                    List<File> result = counter.getTotalFiles();
+                                    headerMsg.setText("total file number : "+result.size());
+                                    for(final File f:result){
+                                        SenderFileJob job=new SenderFileJob(f,workarea,user.getUsername());
+                                        uploadpool.execute(job);
+                                    }
+                                }
+                            }
+
+                        } catch (UnsupportedFlavorException e) {
+                            // TODO Auto-generated catch block
+                            ClientContext.warnLog("drop drag error:", e);
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            ClientContext.warnLog("drop drag error:", e);
+                        }
+                    }
+                });
             }
         });
-        t.start();
+
+
     }
 }

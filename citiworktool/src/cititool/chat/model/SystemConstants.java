@@ -21,6 +21,7 @@ public class SystemConstants {
  * 667 test connection success
  * 668 test connection failure
    */
+   public final static int EXISTS=664;
    public final static int NOAUTHORIZE=665;
    public final static int LOGON=666;
    public final static int TESTSUC=667;

@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -67,8 +65,11 @@ public class FileTransServer extends Server {
                 File f = new File(ServerContext.getPicpath() + File.separator + relativepath);
                 try {
                     fp.writeFile(f, socket);
+                    
                 } catch (IOException ex) {
                     ServerContext.warnServerLog("FileTransServer::writ pic error:", ex);
+                }catch(InterruptedException e){
+                    ServerContext.warnServerLog("FileTransServer::writ pic error:", e);
                 }
             }
             else if(str.equals(TransProtocol.ISFILE_H)){

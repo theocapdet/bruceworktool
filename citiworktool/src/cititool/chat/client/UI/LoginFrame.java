@@ -22,6 +22,8 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -116,6 +118,11 @@ public class LoginFrame extends javax.swing.JFrame {
 
         isSavePass.setText(resourceMap.getString("isSavePass.text")); // NOI18N
         isSavePass.setName("isSavePass"); // NOI18N
+        isSavePass.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                isSavePassItemStateChanged(evt);
+            }
+        });
 
         password.setText(resourceMap.getString("password.text")); // NOI18N
         password.setName("password"); // NOI18N
@@ -188,7 +195,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(149, 149, 149)
                         .addComponent(loginBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(optionBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(registerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -310,7 +317,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     .addGroup(settingPaneLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         clientSetting.addTab("setting", settingPane);
@@ -335,14 +342,14 @@ public class LoginFrame extends javax.swing.JFrame {
             loadDataPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loadDataPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                 .addContainerGap())
         );
         loadDataPaneLayout.setVerticalGroup(
             loadDataPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loadDataPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -355,7 +362,7 @@ public class LoginFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clientSetting, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+                    .addComponent(clientSetting, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -387,20 +394,24 @@ public class LoginFrame extends javax.swing.JFrame {
         final String username = this.username.getSelectedItem().toString();
         String p = String.valueOf(this.password.getPassword());
         String ep = "";
+        if (StringHelper.isEmpty(username) || StringHelper.isEmpty(p)) {
+            ComponentHelper.jtaAppendLine(loginLog, "username or password should not be empty!");
+            JOptionPane.showMessageDialog(rootPane, "username or password should not be empty!");
+            return;
+        }
+
         if (oldPass != null) {
             if (ArrayHelper.isArrayHave(oldPass, p)) {
                 ep = p;
             } else {
                 ep = EncryptHelper.encodeMd5(p);
             }
+        } else {
+            ep = EncryptHelper.encodeMd5(p);
         }
 
 
-        if (StringHelper.isEmpty(username) || StringHelper.isEmpty(p)) {
-            ComponentHelper.jtaAppendLine(loginLog, "username or password should not be empty!");
-            JOptionPane.showMessageDialog(rootPane, "username or password should not be empty!");
-            return;
-        }
+
         prefs.put("isSaveUser", isSaveUser.isSelected() ? "1" : "0");
         prefs.put("isSavePass", isSavePass.isSelected() ? "1" : "0");
 
@@ -411,6 +422,7 @@ public class LoginFrame extends javax.swing.JFrame {
         try {
             final Socket s = new Socket(serverHostValue.getText(), NumberHelper.string2Int(serverPortValue.getText(), 8888));
             TransProtocol.requestLogin(username, userpass, s);
+
             String rstr = TransProtocol.getObject(s).toString();
 
 
@@ -444,9 +456,23 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
                 this.setVisible(false);
                 EventQueue.invokeLater(new Runnable() {
+
                     public void run() {
-                        JFrame frame = new UserInfoFrame(username, s);
-                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        final JFrame frame = new UserInfoFrame(username, s);
+                        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                            public void windowClosing(java.awt.event.WindowEvent e) {
+                                if(JOptionPane.showConfirmDialog(rootPane, "are your sure to exit?","exit chatroom",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION)
+                                {
+                                    try {
+                                        TransProtocol.writeStr(TransProtocol.OFFLINE_H + username, s);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    frame.dispose();
+                                }
+                            }
+                        });
                         WindowHelper.showCenter(frame);
                     }
                 });
@@ -456,13 +482,14 @@ public class LoginFrame extends javax.swing.JFrame {
                 if (JOptionPane.showConfirmDialog(rootPane, "user is online ,are you sure to login?") == JOptionPane.YES_OPTION) {
                     this.setVisible(false);
                     EventQueue.invokeLater(new Runnable() {
+
                         public void run() {
                             JFrame frame = new UserInfoFrame(username, s);
                             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             WindowHelper.showCenter(frame);
                         }
                     });
-                } 
+                }
                 password.setEnabled(true);
                 return;
             } else if (rstr.equals(SystemConstants.NOAUTHORIZE + "")) {
@@ -492,6 +519,8 @@ public class LoginFrame extends javax.swing.JFrame {
             String[] s = str.split(":");
             serverHostValue.setText(s[0]);
             serverPortValue.setText(s[1]);
+
+            prefs.put("lasthost", str);
         }
 
     }//GEN-LAST:event_hostListMouseClicked
@@ -565,24 +594,29 @@ public class LoginFrame extends javax.swing.JFrame {
         this.pack();
 
     }//GEN-LAST:event_optionBtnActionPerformed
+
+    private void isSavePassItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isSavePassItemStateChanged
+        // TODO add your handling code here:
+        password.setEditable(!isSavePass.isSelected());
+    }//GEN-LAST:event_isSavePassItemStateChanged
     /**
      * @param args the command line arguments
      */
-//    public static void main(String args[]) {
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//
-//            public void run() {
-//                LoginFrame dialog = new LoginFrame();
-//                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-//
-//                    public void windowClosing(java.awt.event.WindowEvent e) {
-//                        System.exit(0);
-//                    }
-//                });
-//                dialog.setVisible(true);
-//            }
-//        });
-//    }
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                LoginFrame dialog = new LoginFrame();
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane clientSetting;
     private javax.swing.JList hostList;
@@ -631,6 +665,8 @@ public class LoginFrame extends javax.swing.JFrame {
         this.pack();
         prefs = Preferences.userRoot().node("/com/cititoolkit/loginframe");
         String host = prefs.get("host", "");
+        String lasthost = prefs.get("lasthost", "");
+
         String lastuser = prefs.get("lastuser", "");
 
         if (!host.equals("")) {
@@ -639,6 +675,11 @@ public class LoginFrame extends javax.swing.JFrame {
             serverPortValue.setText(s[1]);
         }
 
+        if (!StringHelper.isEmpty(lasthost)) {
+            String[] s = lasthost.split(":");
+            serverHostValue.setText(s[0]);
+            serverPortValue.setText(s[1]);
+        }
 
         String hl = prefs.get("hostlist", "");
         String[] str = null;

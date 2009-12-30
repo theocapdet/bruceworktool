@@ -4,11 +4,11 @@
  */
 
 /*
- * RemindMsgFrame.java
+ * RemindMsgDlg.java
  *
  * Created on Dec 21, 2009, 11:29:31 AM
  */
-package cititool.chat.client.UI;
+package cititool.chat.client.com.dialog;
 
 import cititool.util.WindowHelper;
 import javax.swing.JFrame;
@@ -19,19 +19,18 @@ import javax.swing.JTextPane;
  *
  * @author zx04741
  */
-public class RemindMsgFrame extends javax.swing.JFrame {
+public class RemindMsgDlg extends javax.swing.JDialog {
 
-    /** Creates new form RemindMsgFrame */
-    public RemindMsgFrame() {
-
+    /** Creates new form RemindMsgDlg */
+    public RemindMsgDlg(JFrame parent) {
         this.setUndecorated(true);
         this.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
         initComponents();
         WindowHelper.showRightBottom(this);
     }
 
-    public RemindMsgFrame(String title){
-        this();
+    public RemindMsgDlg(JFrame parent,String title){
+        this(parent);
         this.setTitle(title);
     }
 
@@ -57,7 +56,7 @@ public class RemindMsgFrame extends javax.swing.JFrame {
         setName("Form"); // NOI18N
         setResizable(false);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(RemindMsgFrame.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(RemindMsgDlg.class);
         jScrollPane1.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("jScrollPane1.border.lineColor"), 2, true)); // NOI18N
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -90,15 +89,7 @@ public class RemindMsgFrame extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
 
-            public void run() {
-               new RemindMsgFrame();
-
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextPane jTextPane1;

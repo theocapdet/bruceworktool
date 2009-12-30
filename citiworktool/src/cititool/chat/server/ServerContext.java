@@ -33,21 +33,21 @@ public class ServerContext {
     //user list
     private static ChatServerFactory factory;
     private static ServerDB db;
-    private static String picpath="C:/picstore/";
+    private static String filestorepath="C:/picstore/";
 
     /**
-     * @return the picpath
+     * @return the filestorepath
      */
-    public static String getPicpath() {
-        return picpath;
+    public static String getSystemFileFolder() {
+        return filestorepath;
     }
 
     /**
-     * @param aPicpath the picpath to set
+     * @param aPicpath the filestorepath to set
      */
-    public static void setPicpath(String aPicpath) {
-        picpath = aPicpath;
-        File f=new File(picpath);
+    public static void setSystemFileFolder(String aPicpath) {
+        filestorepath = aPicpath;
+        File f=new File(filestorepath);
         if(!f.exists())
             f.mkdirs();
     }

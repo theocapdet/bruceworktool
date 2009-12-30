@@ -9,19 +9,13 @@ import cititool.chat.model.UserClient;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
-import cititool.util.ReflectHelper;
 import cititool.util.StringHelper;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JProgressBar;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -183,14 +177,7 @@ public class ClientContext {
     }
 
     public static void requestFile(String relativePath, Socket s) throws IOException {
-
        TransProtocol.writeStr(TransProtocol.REQUEST_FILE_H + relativePath, s);
-       TransProtocol.writeStr(TransProtocol.ISFILE_H, s);
     }
 
-    public static void requestPic(String relativePath, Socket s) throws IOException {
-
-       TransProtocol.writeStr(TransProtocol.REQUEST_FILE_H + relativePath, s);
-       TransProtocol.writeStr(TransProtocol.USERPIC_H, s);
-    }
 }

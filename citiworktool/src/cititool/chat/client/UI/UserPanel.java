@@ -11,6 +11,7 @@
 package cititool.chat.client.UI;
 
 import cititool.chat.client.ClientContext;
+import cititool.chat.client.com.panel.JobPanel;
 import cititool.chat.client.handler.SenderFileJob;
 import cititool.chat.model.SystemConstants.SystemBlank;
 import cititool.chat.protocol.TransProtocol;
@@ -20,7 +21,7 @@ import cititool.util.FileHelper.FileCounter;
 import cititool.util.ImageHelper;
 import cititool.util.StringHelper;
 import cititool.util.SwingThreadPool;
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.text.BadLocationException;
 import static cititool.chat.model.SystemConstants.SystemColor;
 
@@ -50,7 +50,10 @@ public class UserPanel extends javax.swing.JPanel {
 
     /** Creates new form userpanel */
     public UserPanel() {
-        initComponents();
+        initComponents();        
+        workarea=new JobPanel();
+        workarea.setName("workarea");
+        jobView.setViewportView(workarea);
     }
 
     public UserPanel(UserInfo user) {
@@ -75,16 +78,20 @@ public class UserPanel extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         inputtext = new javax.swing.JTextPane();
         jButton1 = new javax.swing.JButton();
-        workarea = new javax.swing.JPanel();
-        headerMsg = new javax.swing.JLabel();
+        toolkitTab = new javax.swing.JTabbedPane();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        facepane = new javax.swing.JTextPane();
         jSplitPane5 = new javax.swing.JSplitPane();
         chatinfoarea1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         chatpane = new javax.swing.JTextPane();
-        userinfo1 = new javax.swing.JPanel();
+        userTab = new javax.swing.JTabbedPane();
+        userView = new javax.swing.JScrollPane();
+        userinfo = new javax.swing.JPanel();
         photolabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         userinfopane = new javax.swing.JTextPane();
+        jobView = new javax.swing.JScrollPane();
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(UserPanel.class);
         setBackground(resourceMap.getColor("Form.background")); // NOI18N
@@ -101,8 +108,7 @@ public class UserPanel extends javax.swing.JPanel {
         inputArea1.setName("inputArea1"); // NOI18N
 
         inputsplitpane1.setBorder(null);
-        inputsplitpane1.setDividerLocation(480);
-        inputsplitpane1.setLastDividerLocation(490);
+        inputsplitpane1.setDividerLocation(460);
         inputsplitpane1.setName("inputsplitpane1"); // NOI18N
         inputsplitpane1.setOneTouchExpandable(true);
 
@@ -139,9 +145,9 @@ public class UserPanel extends javax.swing.JPanel {
         inputarea1.setLayout(inputarea1Layout);
         inputarea1Layout.setHorizontalGroup(
             inputarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, inputarea1Layout.createSequentialGroup()
-                .addContainerGap(425, Short.MAX_VALUE)
+                .addContainerGap(405, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -155,29 +161,17 @@ public class UserPanel extends javax.swing.JPanel {
 
         inputsplitpane1.setLeftComponent(inputarea1);
 
-        workarea.setAutoscrolls(true);
-        workarea.setName("workarea"); // NOI18N
-        workarea.setPreferredSize(new java.awt.Dimension(190, 99));
+        toolkitTab.setName("toolkitTab"); // NOI18N
 
-        headerMsg.setForeground(resourceMap.getColor("headerMsg.foreground")); // NOI18N
-        headerMsg.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        headerMsg.setText(resourceMap.getString("headerMsg.text")); // NOI18N
-        headerMsg.setName("headerMsg"); // NOI18N
+        jScrollPane4.setName("jScrollPane4"); // NOI18N
 
-        javax.swing.GroupLayout workareaLayout = new javax.swing.GroupLayout(workarea);
-        workarea.setLayout(workareaLayout);
-        workareaLayout.setHorizontalGroup(
-            workareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(headerMsg, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
-        );
-        workareaLayout.setVerticalGroup(
-            workareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(workareaLayout.createSequentialGroup()
-                .addComponent(headerMsg, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(156, Short.MAX_VALUE))
-        );
+        facepane.setEditable(false);
+        facepane.setName("facepane"); // NOI18N
+        jScrollPane4.setViewportView(facepane);
 
-        inputsplitpane1.setRightComponent(workarea);
+        toolkitTab.addTab(resourceMap.getString("jScrollPane4.TabConstraints.tabTitle"), jScrollPane4); // NOI18N
+
+        inputsplitpane1.setRightComponent(toolkitTab);
 
         javax.swing.GroupLayout inputArea1Layout = new javax.swing.GroupLayout(inputArea1);
         inputArea1.setLayout(inputArea1Layout);
@@ -193,8 +187,7 @@ public class UserPanel extends javax.swing.JPanel {
         jSplitPane4.setRightComponent(inputArea1);
 
         jSplitPane5.setBorder(null);
-        jSplitPane5.setDividerLocation(480);
-        jSplitPane5.setLastDividerLocation(490);
+        jSplitPane5.setDividerLocation(460);
         jSplitPane5.setName("jSplitPane5"); // NOI18N
         jSplitPane5.setOneTouchExpandable(true);
         jSplitPane5.setPreferredSize(new java.awt.Dimension(700, 200));
@@ -213,7 +206,7 @@ public class UserPanel extends javax.swing.JPanel {
         chatinfoarea1.setLayout(chatinfoarea1Layout);
         chatinfoarea1Layout.setHorizontalGroup(
             chatinfoarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
         chatinfoarea1Layout.setVerticalGroup(
             chatinfoarea1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,10 +215,15 @@ public class UserPanel extends javax.swing.JPanel {
 
         jSplitPane5.setLeftComponent(chatinfoarea1);
 
-        userinfo1.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("userinfo1.border.lineColor"), 1, true)); // NOI18N
-        userinfo1.setMinimumSize(new java.awt.Dimension(5, 5));
-        userinfo1.setName("userinfo1"); // NOI18N
-        userinfo1.setPreferredSize(new java.awt.Dimension(190, 336));
+        userTab.setName("userTab"); // NOI18N
+
+        userView.setName("userView"); // NOI18N
+
+        userinfo.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("userinfo.border.lineColor"), 1, true)); // NOI18N
+        userinfo.setAutoscrolls(true);
+        userinfo.setMinimumSize(new java.awt.Dimension(5, 5));
+        userinfo.setName("userinfo"); // NOI18N
+        userinfo.setPreferredSize(new java.awt.Dimension(190, 330));
 
         photolabel1.setBackground(resourceMap.getColor("photolabel1.background")); // NOI18N
         photolabel1.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("photolabel1.border.lineColor"), 2, true)); // NOI18N
@@ -239,24 +237,34 @@ public class UserPanel extends javax.swing.JPanel {
         userinfopane.setName("userinfopane"); // NOI18N
         jScrollPane3.setViewportView(userinfopane);
 
-        javax.swing.GroupLayout userinfo1Layout = new javax.swing.GroupLayout(userinfo1);
-        userinfo1.setLayout(userinfo1Layout);
-        userinfo1Layout.setHorizontalGroup(
-            userinfo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
-            .addGroup(userinfo1Layout.createSequentialGroup()
+        javax.swing.GroupLayout userinfoLayout = new javax.swing.GroupLayout(userinfo);
+        userinfo.setLayout(userinfoLayout);
+        userinfoLayout.setHorizontalGroup(
+            userinfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, userinfoLayout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
                 .addComponent(photolabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap())
         );
-        userinfo1Layout.setVerticalGroup(
-            userinfo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userinfo1Layout.createSequentialGroup()
+        userinfoLayout.setVerticalGroup(
+            userinfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userinfoLayout.createSequentialGroup()
+                .addGap(11, 11, 11)
                 .addComponent(photolabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
         );
 
-        jSplitPane5.setRightComponent(userinfo1);
+        userView.setViewportView(userinfo);
+
+        userTab.addTab(resourceMap.getString("userView.TabConstraints.tabTitle"), userView); // NOI18N
+
+        jobView.setName("jobView"); // NOI18N
+        jobView.setPreferredSize(new java.awt.Dimension(202, 173));
+        userTab.addTab(resourceMap.getString("jobView.TabConstraints.tabTitle"), jobView); // NOI18N
+
+        jSplitPane5.setRightComponent(userTab);
 
         jSplitPane4.setTopComponent(jSplitPane5);
 
@@ -301,7 +309,7 @@ public class UserPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chatinfoarea1;
     private javax.swing.JTextPane chatpane;
-    private javax.swing.JLabel headerMsg;
+    private javax.swing.JTextPane facepane;
     private javax.swing.JPanel inputArea1;
     private javax.swing.JPanel inputarea1;
     private javax.swing.JSplitPane inputsplitpane1;
@@ -310,19 +318,24 @@ public class UserPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane4;
     private javax.swing.JSplitPane jSplitPane5;
+    private javax.swing.JScrollPane jobView;
     private javax.swing.JLabel photolabel1;
-    private javax.swing.JPanel userinfo1;
+    private javax.swing.JTabbedPane toolkitTab;
+    private javax.swing.JTabbedPane userTab;
+    private javax.swing.JScrollPane userView;
+    private javax.swing.JPanel userinfo;
     private javax.swing.JTextPane userinfopane;
-    private javax.swing.JPanel workarea;
     // End of variables declaration//GEN-END:variables
     private UserInfo user;
     private DropTarget dropTarget;
     private ExecutorService uploadpool;
+    private JobPanel workarea;
 
     private void initdata() {
-        uploadpool=Executors.newFixedThreadPool(20);
+        uploadpool = Executors.newFixedThreadPool(20);
         SwingThreadPool.execute(new Runnable() {
 
             public void run() {
@@ -337,7 +350,7 @@ public class UserPanel extends javax.swing.JPanel {
                     photolabel1.setText(null);
                     ImageHelper.paintImg(photolabel1, new File(photo));
                 } catch (IOException ex) {
-                    ClientContext.warnLog("userpanel::initdata()" + user.getUsername(), ex);
+                    ClientContext.warnLog("userpanel::initdata() " + user.getUsername(), ex);
                 }
                 StringBuffer sb = new StringBuffer();
 
@@ -378,14 +391,17 @@ public class UserPanel extends javax.swing.JPanel {
                                     counter = new FileCounter(fileList);
                                     counter.search();
                                     List<File> result = counter.getTotalFiles();
-                                    headerMsg.setText("total file number : "+result.size());
-                                    for(final File f:result){
-                                        SenderFileJob job=new SenderFileJob(f,workarea,user.getUsername());
-                                        uploadpool.execute(job);
+                                    ComponentHelper.chatDefined(chatpane, "total file number : " + result.size(), SystemColor.BROWN_GREEN, true);
+                                    FocusOnJobTab();
+                                    for (final File f : result) {
+                                        SenderFileJob job = new SenderFileJob(f, workarea, user.getUsername());
+                                        job.prepared();                                        
                                     }
                                 }
                             }
 
+                        } catch (BadLocationException ex) {
+                            ClientContext.warnLog("product msg  error:", ex);
                         } catch (UnsupportedFlavorException e) {
                             // TODO Auto-generated catch block
                             ClientContext.warnLog("drop drag error:", e);
@@ -397,7 +413,10 @@ public class UserPanel extends javax.swing.JPanel {
                 });
             }
         });
+    }
 
+    public void FocusOnJobTab(){
 
+        userTab.setSelectedComponent(jobView);
     }
 }

@@ -49,14 +49,12 @@ public class ChatUserinfoTabDef {
         tabbedPane.setSelectedIndex(curCom - 1);
     }
 
-    private int getTabByUser(UserInfo user) {
-
-
+    public int getTabByUser(String username) {
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             if (i != 0) {
                 JPanel tab = (JPanel) tabbedPane.getTabComponentAt(i);
                 JLabel userlabel = (JLabel) tab.getComponent(0);
-                if (userlabel.getText().trim().equals(user.getUsername())) {
+                if (userlabel.getText().trim().equals(username)) {
                     return i;
                 }
             }
@@ -75,7 +73,7 @@ public class ChatUserinfoTabDef {
 
     public JTextPane getCurrentChatPane() {
         UserPanel p = getCurrentPanel();
-        JComponent com = searcher.getComByName(p, "chatpane");
+        Component com = searcher.getComByName(p, "chatpane");
         if (com == null) {
             return null;
         } else {
@@ -85,7 +83,7 @@ public class ChatUserinfoTabDef {
 
     public JPanel getWorkArea() {
         UserPanel p = getCurrentPanel();
-        JComponent com = searcher.getComByName(p, "workarea");
+        Component com = searcher.getComByName(p, "workarea");
         if (com == null) {
             return null;
         } else {
@@ -94,7 +92,7 @@ public class ChatUserinfoTabDef {
     }
 
     public void addPanel(UserInfo user) {
-        int index = getTabByUser(user);
+        int index = getTabByUser(user.getUsername());
         if (index != -1) {
             tabbedPane.setSelectedIndex(index);
             return;

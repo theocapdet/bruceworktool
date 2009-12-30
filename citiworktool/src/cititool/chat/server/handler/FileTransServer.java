@@ -17,7 +17,7 @@ import java.util.concurrent.Semaphore;
  * @author zx04741
  */
 public class FileTransServer extends Server {
-
+/*
     private static Semaphore gate = new Semaphore(1);
     private String relativepath;
 
@@ -82,4 +82,5 @@ public class FileTransServer extends Server {
         } while (socket != null && !socket.isClosed());
         gate.release();
     }
+ * */
 }

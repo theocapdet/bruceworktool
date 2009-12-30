@@ -228,11 +228,11 @@ public class ComponentHelper {
         }
     }
 
-    public static JComponent getSubComByName(ComSearcher searcher, JComponent p, String name) {
+    public static Component getSubComByName(ComSearcher searcher, JComponent p, String name) {
         if (p == null) {
             return null;
         }
-        JComponent o = searcher.getComByName(p,name);
+        Component o = searcher.getComByName(p,name);
         if (o == null) {
             return null;
         }      
@@ -241,11 +241,11 @@ public class ComponentHelper {
 
     public static class ComSearcher {
 
-        private JComponent root;
-        private JComponent result;
+        private Component root;
+        private Component result;
         private String name;
 
-        public JComponent getComByName(JComponent root, String name) {
+        public Component getComByName(JComponent root, String name) {
             this.root = root;
             this.name = name;
             result = null;
@@ -253,16 +253,16 @@ public class ComponentHelper {
             return result;
         }
 
-        private void search(JComponent com) {
+        private void search(Component com) {
             if (com != null) {
-                if (com.getName() != null && com.getName().equals(name)) {
+                if (com.getName() != null && com.getName().equals(name)) {                   
                     result = com;
                     return;
                 }
             }
             if (com instanceof Container) {
                 Container p = (Container) com;
-                JComponent[] child = (JComponent[]) p.getComponents();
+                Component[] child =  p.getComponents();
                 for (int i = 0; i < child.length; i++) {
                     search(child[i]);
                 }

@@ -38,7 +38,6 @@ public class SessionServer extends Server {
 
     @Override
     public void run() {
-
         while (!socket.isClosed()) {
             Object content = null;
             try {

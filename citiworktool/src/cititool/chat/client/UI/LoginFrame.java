@@ -63,10 +63,8 @@ public class LoginFrame extends javax.swing.JFrame {
         isSavePass = new javax.swing.JCheckBox();
         password = new javax.swing.JPasswordField();
         username = new javax.swing.JComboBox();
-        jLabel6 = new javax.swing.JLabel();
         star = new javax.swing.JLabel();
         star1 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         optionBtn = new javax.swing.JButton();
         clientSetting = new javax.swing.JTabbedPane();
         settingPane = new javax.swing.JPanel();
@@ -89,7 +87,7 @@ public class LoginFrame extends javax.swing.JFrame {
         setName("LoginForm"); // NOI18N
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, resourceMap.getString("jPanel1.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Microsoft Sans Serif", 0, 11), resourceMap.getColor("jPanel1.border.titleColor"))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, resourceMap.getString("jPanel1.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("宋体", 0, 12), resourceMap.getColor("jPanel1.border.titleColor"))); // NOI18N
         jPanel1.setName("jPanel1"); // NOI18N
 
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
@@ -137,11 +135,6 @@ public class LoginFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setFont(resourceMap.getFont("jLabel6.font")); // NOI18N
-        jLabel6.setForeground(resourceMap.getColor("jLabel6.foreground")); // NOI18N
-        jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
-        jLabel6.setName("jLabel6"); // NOI18N
-
         star.setFont(resourceMap.getFont("star.font")); // NOI18N
         star.setForeground(resourceMap.getColor("star.foreground")); // NOI18N
         star.setText(resourceMap.getString("star.text")); // NOI18N
@@ -151,11 +144,6 @@ public class LoginFrame extends javax.swing.JFrame {
         star1.setForeground(resourceMap.getColor("star1.foreground")); // NOI18N
         star1.setText(resourceMap.getString("star1.text")); // NOI18N
         star1.setName("star1"); // NOI18N
-
-        jLabel7.setFont(resourceMap.getFont("jLabel7.font")); // NOI18N
-        jLabel7.setForeground(resourceMap.getColor("jLabel7.foreground")); // NOI18N
-        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
-        jLabel7.setName("jLabel7"); // NOI18N
 
         optionBtn.setText(resourceMap.getString("optionBtn.text")); // NOI18N
         optionBtn.setName("optionBtn"); // NOI18N
@@ -189,11 +177,7 @@ public class LoginFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(149, 149, 149)
                         .addComponent(loginBtn)
@@ -210,13 +194,11 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(star)
-                    .addComponent(jLabel7))
+                    .addComponent(star))
                 .addGap(26, 26, 26)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
                     .addComponent(star1))
                 .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -344,14 +326,14 @@ public class LoginFrame extends javax.swing.JFrame {
             loadDataPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loadDataPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
                 .addContainerGap())
         );
         loadDataPaneLayout.setVerticalGroup(
             loadDataPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loadDataPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -364,7 +346,7 @@ public class LoginFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clientSetting, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+                    .addComponent(clientSetting, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -463,13 +445,13 @@ public class LoginFrame extends javax.swing.JFrame {
                         final JFrame frame = new UserInfoFrame(username, s);
                         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                         frame.addWindowListener(new java.awt.event.WindowAdapter() {
+
                             public void windowClosing(java.awt.event.WindowEvent e) {
-                                 
+
 //                                ExitDialog dlg=new ExitDialog(frame, true);
 
-                                if(JOptionPane.showConfirmDialog(rootPane, "are your sure to exit?",
-                                        "exit chatroom",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION)
-                                {
+                                if (JOptionPane.showConfirmDialog(rootPane, "are your sure to exit?",
+                                        "exit chatroom", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                                     try {
                                         TransProtocol.writeStr(TransProtocol.OFFLINE_H + username, s);
                                     } catch (IOException ex) {
@@ -507,11 +489,13 @@ public class LoginFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             ComponentHelper.jtaAppendLine(loginLog, ex.getMessage());
             JOptionPane.showMessageDialog(this, "login fail..check system connection");
+            password.setText(p);
             password.setEnabled(true);
             return;
         } catch (ClassNotFoundException ex) {
             ComponentHelper.jtaAppendLine(loginLog, ex.getMessage());
             JOptionPane.showMessageDialog(this, "login fail..check system connection");
+            password.setText(p);
             password.setEnabled(true);
             return;
         }
@@ -585,6 +569,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         }
+        password.setEnabled(true);
         password.setText("");
     }//GEN-LAST:event_usernameItemStateChanged
 
@@ -603,7 +588,10 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void isSavePassItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isSavePassItemStateChanged
         // TODO add your handling code here:
-        password.setEditable(!isSavePass.isSelected());
+        if (oldUser != null) {
+            password.setEnabled(!isSavePass.isSelected());
+        }
+
     }//GEN-LAST:event_isSavePassItemStateChanged
     /**
      * @param args the command line arguments
@@ -634,8 +622,6 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -703,7 +689,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 ComponentHelper.jtaAppendLine(loginLog, ex.getMessage());
             }
             for (int i = 0; i < oldUser.length; i++) {
-                if (lastuser.equals(lastuser)) {
+                if (lastuser.equals(oldUser[i])) {
                     r = i;
                 }
                 this.username.addItem(oldUser[i]);
@@ -717,6 +703,7 @@ public class LoginFrame extends javax.swing.JFrame {
         if (!t.equals("")) {
             try {
                 oldPass = StringHelper.split(t, ",");
+
             } catch (Exception ex) {
                 ComponentHelper.jtaAppendLine(loginLog, ex.getMessage());
             }

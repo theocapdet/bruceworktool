@@ -124,44 +124,44 @@ public class FileProcesser {
         this.readfolder = f;
     }
 
-    public void transferFile(Socket sender, Socket receiver,String savepath) throws IOException, ClassNotFoundException {
+    public void transferFile(Socket sender, Socket receiver, String savepath) throws IOException, ClassNotFoundException {
 
 
-            
-            //notify the sender and the recv start to start to transfer file
+
+        //notify the sender and the recv start to start to transfer file
 
 //            TransProtocol.writeStr(TransProtocol.START_TRANSFER_FH, receiver);
-            ObjectInputStream ois = new ObjectInputStream(sender.getInputStream());
-            String header = (String) ois.readObject();
-            if (header.equals(TransProtocol.FILE_H)) {
-                String filepath = (String) ois.readObject();
-                total = ois.readLong();
-                long count = ois.readLong();
-                byte[] buffer;
-                ObjectOutputStream recvOs = new ObjectOutputStream(receiver.getOutputStream());
-                recvOs.writeObject(TransProtocol.FILE_H);
-                recvOs.writeObject(savepath);
-                recvOs.writeLong(total);
-                recvOs.writeLong(count);
+        ObjectInputStream ois = new ObjectInputStream(sender.getInputStream());
+        String header = (String) ois.readObject();
+        if (header.equals(TransProtocol.FILE_H)) {
+            String filepath = (String) ois.readObject();
+            total = ois.readLong();
+            long count = ois.readLong();
+            byte[] buffer;
+            ObjectOutputStream recvOs = new ObjectOutputStream(receiver.getOutputStream());
+            recvOs.writeObject(TransProtocol.FILE_H);
+            recvOs.writeObject(savepath);
+            recvOs.writeLong(total);
+            recvOs.writeLong(count);
 //                 receiver.writeObject(TransProtocol.FILE_H);
 //                 receiver.writeObject(savepath);
 //                 receiver.writeLong(total);
 //                 receiver.writeLong(count);
-                for (long i = 0; i < count; i++) {
-                    buffer = new byte[bz];
-                    buffer = (byte[]) ois.readObject();
-//                    receiver.writeObject(buffer);
-                    recvOs.writeObject(buffer);
-                }
-                int lastsize = ois.readInt();
-                recvOs.writeInt(lastsize);
+            for (long i = 0; i < count; i++) {
                 buffer = new byte[bz];
                 buffer = (byte[]) ois.readObject();
-                if (lastsize > -1) {
-                    recvOs.writeObject(buffer);
-                }
+//                    receiver.writeObject(buffer);
+                recvOs.writeObject(buffer);
             }
-        
+            int lastsize = ois.readInt();
+            recvOs.writeInt(lastsize);
+            buffer = new byte[bz];
+            buffer = (byte[]) ois.readObject();
+            if (lastsize > -1) {
+                recvOs.writeObject(buffer);
+            }
+        }
+
     }
 
     public void writeFile(File f, Socket socket) throws IOException, InterruptedException {
@@ -175,8 +175,10 @@ public class FileProcesser {
         oos.writeLong(count);
         byte[] buffer;
         FileInputStream fis = new FileInputStream(f);
-        t = System.currentTimeMillis();
-        oldt = t;
+        if (speedLabel != null) {
+            t = System.currentTimeMillis();
+            oldt = t;
+        }
         int flg = 0;
         for (long i = 0; i < count; i++) {
             if (gate != null) {
@@ -191,14 +193,14 @@ public class FileProcesser {
             oos.writeObject(buffer);
             p += bz;
             flg += bz;
-            if (i % 10 == 0 || i == count - 1) {
-                t = System.currentTimeMillis();
-                if (speedLabel != null) {
+            if (speedLabel != null) {
+                if (i % 10 == 0 || i == count - 1) {
+                    t = System.currentTimeMillis();
                     speedLabel.setText(getSpeed(t - oldt, flg));
+                    flg = 0;
+                    oldt = t;
+                    updateUI();
                 }
-                flg = 0;
-                oldt = t;
-                updateUI();
             }
         }
         buffer = new byte[bz];
@@ -208,6 +210,7 @@ public class FileProcesser {
         p += t;
         updateUI();
         fis.close();
+        System.out.println("write over...");
     }
 
     public void readFile(Socket socket) throws IOException, ClassNotFoundException {
@@ -220,11 +223,11 @@ public class FileProcesser {
         String header = (String) ois.readObject();
         if (header.equals(TransProtocol.FILE_H)) {
             String filepath = (String) ois.readObject();
-            System.out.println("read file==>" + filepath);
             String filename = StringHelper.getFileName(filepath);
             p = 0;
             total = ois.readLong();
             long count = ois.readLong();
+            
             if (!StringHelper.isEmpty(filefolder)) {
                 File folder = new File(filefolder);
                 if (!(folder.exists() && folder.isDirectory())) {
@@ -238,9 +241,12 @@ public class FileProcesser {
             } else {
                 t = filefolder + File.separator + filename;
             }
+            System.out.println("read file==>" + t + ",total" + total + ",count==>" + count);
             FileOutputStream fos = new FileOutputStream(new File(t));
-            this.t = System.currentTimeMillis();
-            oldt = this.t;
+            if (speedLabel != null) {
+                this.t = System.currentTimeMillis();
+                oldt = this.t;
+            }
             int flg = 0;
             for (long i = 0; i < count; i++) {
                 buffer = new byte[bz];
@@ -248,14 +254,16 @@ public class FileProcesser {
                 fos.write(buffer);
                 fos.flush();
                 p += bz;
-                if (i % 10 == 0 || i == count - 1) {
-                    this.t = System.currentTimeMillis();
-                    if (speedLabel != null) {
-                        speedLabel.setText(getSpeed(this.t - oldt, flg));
+                if (speedLabel != null) {
+                    if (i % 10 == 0 || i == count - 1) {
+                        this.t = System.currentTimeMillis();
+                        if (speedLabel != null) {
+                            speedLabel.setText(getSpeed(this.t - oldt, flg));
+                        }
+                        flg = 0;
+                        oldt = this.t;
+                        updateUI();
                     }
-                    flg = 0;
-                    oldt = this.t;
-                    updateUI();
                 }
             }
             int lastsize = ois.readInt();
@@ -267,6 +275,9 @@ public class FileProcesser {
                 fos.write(buffer, 0, lastsize);
                 fos.flush();
             }
+            fos.close();
+            System.out.println("read over...");
         }
+
     }
 }

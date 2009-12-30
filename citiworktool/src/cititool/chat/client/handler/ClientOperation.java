@@ -62,7 +62,7 @@ public class ClientOperation {
                 unlock();
             }
             ClientContext.productLog("request pic over..");
-        }else{
+        } else {
             unlock();
         }
 //        System.out.println("request pic over..");
@@ -77,12 +77,12 @@ public class ClientOperation {
     }
 
     public void loadFileFromServer(String folder, String relativePath) throws IOException, ClassNotFoundException {
-        ClientContext.requestFile(relativePath, socket);
         File f = new File(folder);
         if (!f.exists()) {
             f.mkdirs();
         }
         handler.setUserpic(folder);
+        ClientContext.requestFile(relativePath, socket);
     }
 
     public void openUserPane(String username) throws IOException, ClassNotFoundException {
@@ -102,7 +102,7 @@ public class ClientOperation {
 
         String title = t.substring(TransProtocol.POPMSG_H.length());
         HTMLDocument document = (HTMLDocument) TransProtocol.getObject(socket);
-        RemindMsgDlg frame = new RemindMsgDlg(this.frame,title);
+        RemindMsgDlg frame = new RemindMsgDlg(this.frame, title);
         JTextPane textpane = frame.getContent();
         textpane.setDocument(document);
         textpane.repaint();

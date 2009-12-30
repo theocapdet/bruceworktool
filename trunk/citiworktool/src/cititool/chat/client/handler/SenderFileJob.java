@@ -5,7 +5,7 @@
 package cititool.chat.client.handler;
 
 import cititool.chat.client.ClientContext;
-import cititool.chat.client.com.FilePanel;
+import cititool.chat.client.com.panel.FilePanel;
 import cititool.chat.client.listener.FileProcesser;
 import cititool.chat.protocol.TransProtocol;
 import java.io.File;
@@ -24,14 +24,21 @@ public class SenderFileJob extends Thread implements WorkJob {
     private File f;
     private FileProcesser process;
     private String recv;
+    private JPanel main;
 
     public SenderFileJob(File file, JPanel panel, String recv) {
         this.f = file;
         this.recv = recv;
         socket = ClientContext.getCurrentSocket();
-        this.widget = new FilePanel(file.getPath(), this);
-        widget.setSender();
-        panel.add(widget);
+        this.main = panel;
+    }
+
+    public void prepared() throws IOException {
+        this.widget = new FilePanel(f.getPath(), this);
+        widget.isSender();
+        main.add(widget);
+        main.updateUI();
+        TransProtocol.writeStr(TransProtocol.TRANSFER_FH + recv + TransProtocol.SPLIT + f.getName(), socket);
     }
 
     public void run() {
@@ -39,10 +46,10 @@ public class SenderFileJob extends Thread implements WorkJob {
             process = new FileProcesser();
             process.setProcessBar(widget.getProcessBar());
             process.setProcessLabel(widget.getProgressLabel());
-            process.setSpeedLabel(widget.getSpeedLabel());
-            TransProtocol.writeStr(TransProtocol.TRANSFER_FH+recv+TransProtocol.SPLIT+f.getName(), socket);
+            process.setSpeedLabel(widget.getSpeedLabel());            
             process.writeFile(f, socket);
-        } catch (IOException ex) {
+            
+        }  catch (IOException ex) {
             ClientContext.productLog("upload file " + f.getPath() + " IOerror:" + ex);
         } catch (InterruptedException ex) {
             ClientContext.productLog("upload file " + f.getPath() + " Inerrupterror:" + ex);

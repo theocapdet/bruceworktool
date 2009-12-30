@@ -10,6 +10,7 @@
  */
 package cititool.chat.client.UI;
 
+import cititool.chat.client.com.dialog.ExitDialog;
 import cititool.chat.model.SystemConstants;
 import cititool.chat.protocol.TransProtocol;
 import cititool.util.ArrayHelper;
@@ -25,6 +26,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -462,7 +464,11 @@ public class LoginFrame extends javax.swing.JFrame {
                         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                         frame.addWindowListener(new java.awt.event.WindowAdapter() {
                             public void windowClosing(java.awt.event.WindowEvent e) {
-                                if(JOptionPane.showConfirmDialog(rootPane, "are your sure to exit?","exit chatroom",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION)
+                                 
+//                                ExitDialog dlg=new ExitDialog(frame, true);
+
+                                if(JOptionPane.showConfirmDialog(rootPane, "are your sure to exit?",
+                                        "exit chatroom",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION)
                                 {
                                     try {
                                         TransProtocol.writeStr(TransProtocol.OFFLINE_H + username, s);

@@ -496,9 +496,9 @@ public class ChatServerFrame extends javax.swing.JFrame {
                             .addComponent(picfolder, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dbfolder, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(DBPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dbfolderBtn)
-                            .addComponent(picfolderBtn))))
+                        .addGroup(DBPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(dbfolderBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(picfolderBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(79, Short.MAX_VALUE))
             .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
         );
@@ -646,13 +646,12 @@ public class ChatServerFrame extends javax.swing.JFrame {
     private void serverTabMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverTabMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-
-            int index = serverTab.rowAtPoint(evt.getPoint());
-            int c=evt.getClickCount();
+            int index = serverTab.rowAtPoint(evt.getPoint());                       
             /**
              * edit server
              */
-            if (index <= serverTab.getRowCount() - 1) {
+            if (index >=0 && index<=serverTab.getRowCount()-1) {
+                int c=evt.getClickCount();
                 if(c==1){
                 String serverName = (String) serverTab.getValueAt(index, 0);
                 MainServer server = ServerContext.getServerFactory().getServerByName(serverName);
@@ -752,7 +751,7 @@ public class ChatServerFrame extends javax.swing.JFrame {
         File f=chooser.getSelectedFile();
         picfolder.setText(f.getPath());
         pref.put("picpath", picfolder.getText()+File.separator);
-        ServerContext.setPicpath(picfolder.getText()+File.separator);
+        ServerContext.setSystemFileFolder(picfolder.getText()+File.separator);
     }//GEN-LAST:event_picfolderBtnActionPerformed
 
     /**
@@ -930,11 +929,13 @@ public class ChatServerFrame extends javax.swing.JFrame {
                 pref= Preferences.userRoot().node("/com/cititoolkit");
                 String picstore=pref.get("picpath", "C:/brucexx/picstore/");
                 String dbstore=pref.get("dbpath", "C:/brucexx/xmldb/");
+                dbfolder.setText(dbstore);
+                picfolder.setText(picstore);
                 ServerContext.setServerLogger(serverlog);
                 ServerContext.setDBLogger(dblog);
  
                 ServerContext.instance();
-                ServerContext.setPicpath(picstore);
+                ServerContext.setSystemFileFolder(picstore);
                 ServerContext.getDB().setDbpath(dbstore);
                 //make system folder
                 File f = new File(AppContext.getSystemFolderPath());

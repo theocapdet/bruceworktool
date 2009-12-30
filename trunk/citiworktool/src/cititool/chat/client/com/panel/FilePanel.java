@@ -8,17 +8,19 @@
  *
  * Created on Dec 25, 2009, 4:28:57 PM
  */
-package cititool.chat.client.com;
+package cititool.chat.client.com.panel;
 
 import cititool.chat.client.ClientContext;
 import cititool.chat.client.handler.WorkJob;
 import cititool.chat.protocol.TransProtocol;
+import cititool.util.StringHelper;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
@@ -28,11 +30,13 @@ import javax.swing.JProgressBar;
 public class FilePanel extends javax.swing.JPanel {
 
     /** Creates new form FilePanel */
-    public FilePanel(String recvName, WorkJob job) {
+    public FilePanel(String fileName, WorkJob job) {
         initComponents();
-        this.recvName = recvName;
+        this.fileName = fileName;
         this.job = job;
-        this.filenamelbl.setText(recvName);
+        this.filenamelbl.setText(StringHelper.getFileName(fileName));
+        this.filenamelbl.setToolTipText(fileName);
+        parent=(JobPanel)this.getParent();
     }
 
     /** This method is called from within the constructor to
@@ -53,10 +57,13 @@ public class FilePanel extends javax.swing.JPanel {
         speed = new javax.swing.JLabel();
 
         setName("Form"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(184, 50));
 
         jProgressBar1.setName("jProgressBar1"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(FilePanel.class);
+        filenamelbl.setFont(resourceMap.getFont("filenamelbl.font")); // NOI18N
+        filenamelbl.setForeground(resourceMap.getColor("filenamelbl.foreground")); // NOI18N
         filenamelbl.setText(resourceMap.getString("filenamelbl.text")); // NOI18N
         filenamelbl.setName("filenamelbl"); // NOI18N
 
@@ -109,35 +116,36 @@ public class FilePanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(speed, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(speed, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl1)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lbl2)
-                        .addGap(18, 18, 18)
+                        .addGap(14, 14, 14)
                         .addComponent(lbl3))
-                    .addComponent(filenamelbl, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(filenamelbl, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(filenamelbl, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
+                    .addComponent(filenamelbl, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE))
+                .addGap(1, 1, 1)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl3, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
-                        .addComponent(lbl2)
-                        .addComponent(lbl1))
-                    .addComponent(speed, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                        .addComponent(lbl3)
+                        .addComponent(lbl1)
+                        .addComponent(lbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(speed)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -171,7 +179,13 @@ public class FilePanel extends javax.swing.JPanel {
         this.setCursor(Cursor.getDefaultCursor());
     }//GEN-LAST:event_lbl3MouseExited
 
-    public void setSender() {
+    private void remove(){
+
+        parent.remove(this);
+    }
+
+    public void isSender() {
+        
         lbl1.setVisible(false);
         lbl2.setVisible(false);
         lbl3.setText("cancel");
@@ -180,6 +194,7 @@ public class FilePanel extends javax.swing.JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 1) {
                     job.cancel();
+                    remove();
                 }
             }
         });
@@ -201,16 +216,17 @@ public class FilePanel extends javax.swing.JPanel {
         return speed;
     }
 
-    public void setRecv() {
+    public void isRecv() {
         lbl1.setVisible(true);
         lbl2.setVisible(true);
         //accept the file to default folder
         lbl1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 1) {
-                    saveFilepath = ClientContext.getCurrentUserFolder() + File.separator + recvName;
+                    saveFilepath = ClientContext.getCurrentUserFolder() + File.separator + fileName;
                     try {
-                        TransProtocol.writeStr(TransProtocol.READY_TRANSFER_FH + saveFilepath, ClientContext.getCurrentSocket());
+                        TransProtocol.writeStr(TransProtocol.READY_TRANSFER_FH + saveFilepath
+                                +TransProtocol.SPLIT+senderName, ClientContext.getCurrentSocket());
                     } catch (IOException ex) {
                         ClientContext.warnLog("start receive file " + saveFilepath + " error:", ex);
                     }
@@ -225,9 +241,12 @@ public class FilePanel extends javax.swing.JPanel {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setMultiSelectionEnabled(false);
                     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    if(chooser.showOpenDialog(parent)!= JFileChooser.APPROVE_OPTION)
+                        return;
                     saveFilepath = chooser.getSelectedFile().getPath();
                     try {
-                        TransProtocol.writeStr(TransProtocol.READY_TRANSFER_FH + saveFilepath, ClientContext.getCurrentSocket());
+                        TransProtocol.writeStr(TransProtocol.READY_TRANSFER_FH + saveFilepath
+                                +TransProtocol.SPLIT+senderName, ClientContext.getCurrentSocket());
                     } catch (IOException ex) {
                         ClientContext.warnLog("start receive file " + saveFilepath + " error:", ex);
                     }
@@ -242,11 +261,16 @@ public class FilePanel extends javax.swing.JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 1) {
                     job.cancel();
+                    remove();
                 }
             }
         });
         lbl3.setVisible(true);
     }
+    public void setSenderName(String sendName){
+        this.senderName=sendName;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel filenamelbl;
     private javax.swing.JProgressBar jProgressBar1;
@@ -256,7 +280,9 @@ public class FilePanel extends javax.swing.JPanel {
     private javax.swing.JLabel progress;
     private javax.swing.JLabel speed;
     // End of variables declaration//GEN-END:variables
-    private String recvName;
+    private String fileName;
     private WorkJob job;
     private String saveFilepath;
+    private JPanel parent;
+    private String senderName;
 }

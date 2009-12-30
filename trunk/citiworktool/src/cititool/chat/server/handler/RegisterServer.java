@@ -56,7 +56,7 @@ public class RegisterServer extends Server {
                 if (!StringHelper.isEmpty(user.getPhotopath())) {
                     long s1 = System.currentTimeMillis();                  
                     FileProcesser fp = new FileProcesser();
-                    fp.readFile(ServerContext.getPicpath()+File.separator + user.getUsername(), socket);
+                    fp.readFileInFolder(ServerContext.getSystemFileFolder()+File.separator + user.getUsername(), socket);
                     long e1 = System.currentTimeMillis();
                     System.out.println(" update photo time:" + (e1 - s1) + "ms");
                 }

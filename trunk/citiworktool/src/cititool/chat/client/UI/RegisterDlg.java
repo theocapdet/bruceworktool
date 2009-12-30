@@ -278,24 +278,24 @@ public class RegisterDlg extends javax.swing.JDialog {
                                             .addGroup(registerPaneLayout.createSequentialGroup()
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(browser)
-                                                .addGap(18, 18, 18)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(jLabel1))
                                             .addGroup(registerPaneLayout.createSequentialGroup()
                                                 .addGap(2, 2, 2)
                                                 .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(phoneNo, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
-                                                    .addComponent(nickname, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
+                                                    .addComponent(phoneNo, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                                                    .addComponent(nickname, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                     .addComponent(jLabel15)
                                                     .addComponent(jLabel19)))))
                                     .addGroup(registerPaneLayout.createSequentialGroup()
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(photopath, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(photopath, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(photoview, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
+                                    .addComponent(jLabel2)
+                                    .addComponent(photoview, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(166, 166, 166))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, registerPaneLayout.createSequentialGroup()
                                 .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -304,7 +304,8 @@ public class RegisterDlg extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(countrySel, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(address, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(address, javax.swing.GroupLayout.PREFERRED_SIZE, 573, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(157, 157, 157)))
                         .addGap(67, 67, 67))
                     .addGroup(registerPaneLayout.createSequentialGroup()
                         .addGap(217, 217, 217)
@@ -337,8 +338,8 @@ public class RegisterDlg extends javax.swing.JDialog {
                     .addGroup(registerPaneLayout.createSequentialGroup()
                         .addGap(73, 73, 73)
                         .addGroup(registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(browser))
+                            .addComponent(browser)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(photopath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(31, 31, 31)
@@ -391,7 +392,7 @@ public class RegisterDlg extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, 669, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -475,6 +476,7 @@ public class RegisterDlg extends javax.swing.JDialog {
             if (rstr.equals(SystemConstants.REG_SUC + "")) {
                 JOptionPane.showMessageDialog(this, "register success!");
                 this.dispose();
+                s.close();
 
             } else if(rstr.equals(SystemConstants.REG_FAIL + "")) {
                 JOptionPane.showMessageDialog(this, "register failure!");

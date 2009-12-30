@@ -5,7 +5,7 @@
 package cititool.chat.client.handler;
 
 import cititool.chat.client.ClientContext;
-import cititool.chat.client.UI.RemindMsgFrame;
+import cititool.chat.client.com.dialog.RemindMsgDlg;
 import cititool.chat.client.UI.UserInfoFrame;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Semaphore;
 import javax.swing.JTextPane;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.html.HTMLDocument;
 
 /**
@@ -42,10 +41,9 @@ public class ClientOperation {
         try {
             lock();
         } catch (InterruptedException ex) {
-            ClientContext.productLog("loadTotalUser ", ex);
+            ClientContext.productLog("loadTotalUser", ex);
         }
-        loadUserInfotFromServer(username);
-
+        loadUserInfoFromServer(username);
         try {
             lock();
         } catch (InterruptedException ex) {
@@ -53,26 +51,28 @@ public class ClientOperation {
         }
         UserInfo user = ClientContext.getCacheInfo(username);
         //load picture
-        String folder = ClientContext.getUserPath() + File.separator + username;
-        String path = folder + File.separator + StringHelper.getFileName(user.getPhotopath());
-
-//        System.out.println("request pic path==>" + path);
-        File f = new File(path);
-        if (!f.exists()) {
-            loadFileFromServer(folder, username + File.separator + StringHelper.getFileName(user.getPhotopath()));
-        } else {
+        if (!StringHelper.isEmpty(user.getPhotopath())) {
+            String folder = ClientContext.getUserPath() + File.separator + username;
+            String path = folder + File.separator + StringHelper.getFileName(user.getPhotopath());
+//            System.out.println("request pic path==>" + path);
+            File f = new File(path);
+            if (!f.exists()) {
+                loadFileFromServer(folder, username + File.separator + StringHelper.getFileName(user.getPhotopath()));
+            } else {
+                unlock();
+            }
+            ClientContext.productLog("request pic over..");
+        }else{
             unlock();
         }
-        ClientContext.productLog("request pic over..");
 //        System.out.println("request pic over..");
     }
 
-    public void loadUserInfotFromServer(String username) throws IOException, ClassNotFoundException {
+    public void loadUserInfoFromServer(String username) throws IOException, ClassNotFoundException {
         if (ClientContext.getCacheInfo(username) != null) {
             unlock();
             return;
         }
-
         TransProtocol.requestUserInfo(username, socket);
     }
 
@@ -90,9 +90,7 @@ public class ClientOperation {
         UserInfo userinfo = ClientContext.getCacheInfo(username);
         if (userinfo != null) {
             frame.getTab().addPanel(userinfo);
-            //get userinfo socket
         }
-
     }
 
     public void loadUserListFromServer(String curuser) throws IOException, ClassNotFoundException {
@@ -104,7 +102,7 @@ public class ClientOperation {
 
         String title = t.substring(TransProtocol.POPMSG_H.length());
         HTMLDocument document = (HTMLDocument) TransProtocol.getObject(socket);
-        RemindMsgFrame frame = new RemindMsgFrame(title);
+        RemindMsgDlg frame = new RemindMsgDlg(this.frame,title);
         JTextPane textpane = frame.getContent();
         textpane.setDocument(document);
         textpane.repaint();

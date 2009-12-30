@@ -5,6 +5,7 @@
 package cititool.chat.client.listener;
 
 import cititool.chat.protocol.TransProtocol;
+import cititool.chat.server.handler.SessionServer;
 import cititool.util.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,9 +34,9 @@ public class FileProcesser {
     private JProgressBar bar;
     private JLabel processLabel;
     private JLabel speedLabel;
-    private boolean flag = false;
+    private boolean stop = false;
     private Semaphore gate;
-    private String readFileName;
+    private boolean readfolder = true;
     private long t;
     private long oldt;
     private DecimalFormat df = new DecimalFormat("0.00");
@@ -81,7 +82,9 @@ public class FileProcesser {
         if (bar != null) {
             bar.setValue(getCurrentPercent());
         }
-        processLabel.setText(shortSize(p) + "/" + shortSize(total));
+        if (processLabel != null) {
+            processLabel.setText(shortSize(p) + "/" + shortSize(total));
+        }
     }
 
     public String getSpeed(long detatime, int bytes) {
@@ -110,42 +113,45 @@ public class FileProcesser {
     }
 
     public void stop() {
-        flag = true;
+        stop = true;
     }
 
     public void retore() {
-        flag = false;
+        stop = false;
     }
 
-    public void setReadFileName(String name) {
-        this.readFileName = name;
+    public void isReadInFolder(boolean f) {
+        this.readfolder = f;
     }
 
-    public void transferFile(Socket sender, Socket receiver) throws IOException, ClassNotFoundException {
+    public void transferFile(Socket sender, Socket receiver,String savepath) throws IOException, ClassNotFoundException {
 
-        ObjectInputStream ois = new ObjectInputStream(sender.getInputStream());
-        String header = (String) ois.readObject();
-        if (header.equals(TransProtocol.FILE_H)) {
-            String filepath = (String) ois.readObject();
-//            String filename = StringHelper.getFileName(filepath);
-            total = ois.readLong();
-            long count = ois.readLong();
-            byte[] buffer;
 
-            ObjectOutputStream recvOs = new ObjectOutputStream(receiver.getOutputStream());
-            TransProtocol.writeStr(TransProtocol.READY_TRANSFER_FH + filepath, receiver);
-            String str = TransProtocol.getObject(receiver).toString();
-            if (str.equals(TransProtocol.READY_TRANSFER_FH)) {
-                TransProtocol.writeStr(TransProtocol.START_TRANSFER_FH, receiver);
-                TransProtocol.writeStr(TransProtocol.FILE_H, receiver);
+            
+            //notify the sender and the recv start to start to transfer file
+
+//            TransProtocol.writeStr(TransProtocol.START_TRANSFER_FH, receiver);
+            ObjectInputStream ois = new ObjectInputStream(sender.getInputStream());
+            String header = (String) ois.readObject();
+            if (header.equals(TransProtocol.FILE_H)) {
+                String filepath = (String) ois.readObject();
+                total = ois.readLong();
+                long count = ois.readLong();
+                byte[] buffer;
+                ObjectOutputStream recvOs = new ObjectOutputStream(receiver.getOutputStream());
+                recvOs.writeObject(TransProtocol.FILE_H);
+                recvOs.writeObject(savepath);
                 recvOs.writeLong(total);
                 recvOs.writeLong(count);
-                recvOs.writeInt(bz);
+//                 receiver.writeObject(TransProtocol.FILE_H);
+//                 receiver.writeObject(savepath);
+//                 receiver.writeLong(total);
+//                 receiver.writeLong(count);
                 for (long i = 0; i < count; i++) {
                     buffer = new byte[bz];
                     buffer = (byte[]) ois.readObject();
+//                    receiver.writeObject(buffer);
                     recvOs.writeObject(buffer);
-                    recvOs.flush();
                 }
                 int lastsize = ois.readInt();
                 recvOs.writeInt(lastsize);
@@ -153,10 +159,9 @@ public class FileProcesser {
                 buffer = (byte[]) ois.readObject();
                 if (lastsize > -1) {
                     recvOs.writeObject(buffer);
-                    recvOs.flush();
                 }
             }
-        }
+        
     }
 
     public void writeFile(File f, Socket socket) throws IOException, InterruptedException {
@@ -175,7 +180,7 @@ public class FileProcesser {
         int flg = 0;
         for (long i = 0; i < count; i++) {
             if (gate != null) {
-                if (flag) {
+                if (stop) {
                     gate.acquire();
                 } else {
                     gate.release();
@@ -205,23 +210,33 @@ public class FileProcesser {
         fis.close();
     }
 
-    public void readFile(String filefolder, Socket socket) throws IOException, ClassNotFoundException {
+    public void readFile(Socket socket) throws IOException, ClassNotFoundException {
+        isReadInFolder(false);
+        readFileInFolder(null, socket);
+    }
+
+    public void readFileInFolder(String filefolder, Socket socket) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         String header = (String) ois.readObject();
         if (header.equals(TransProtocol.FILE_H)) {
             String filepath = (String) ois.readObject();
+            System.out.println("read file==>" + filepath);
             String filename = StringHelper.getFileName(filepath);
             p = 0;
             total = ois.readLong();
             long count = ois.readLong();
-            File folder = new File(filefolder);
-            if (!(folder.exists() && folder.isDirectory())) {
-                folder.mkdirs();
+            if (!StringHelper.isEmpty(filefolder)) {
+                File folder = new File(filefolder);
+                if (!(folder.exists() && folder.isDirectory())) {
+                    folder.mkdirs();
+                }
             }
             byte[] buffer;
-            String t = filefolder + File.separator + filename;
-            if (!StringHelper.isEmpty(readFileName)) {
-                t = readFileName;
+            String t = "";
+            if (!readfolder) {
+                t = filepath;
+            } else {
+                t = filefolder + File.separator + filename;
             }
             FileOutputStream fos = new FileOutputStream(new File(t));
             this.t = System.currentTimeMillis();
@@ -241,7 +256,7 @@ public class FileProcesser {
                     flg = 0;
                     oldt = this.t;
                     updateUI();
-                }              
+                }
             }
             int lastsize = ois.readInt();
             p += lastsize;
@@ -252,7 +267,6 @@ public class FileProcesser {
                 fos.write(buffer, 0, lastsize);
                 fos.flush();
             }
-
         }
     }
 }

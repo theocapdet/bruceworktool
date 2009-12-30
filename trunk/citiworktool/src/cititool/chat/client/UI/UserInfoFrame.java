@@ -39,11 +39,10 @@ import javax.swing.tree.TreePath;
 public class UserInfoFrame extends javax.swing.JFrame {
 
     /** Creates new form newUser */
-    public UserInfoFrame(String username, final Socket s) {
-
-        this.setTitle("hi~ dear " + username);
+    public UserInfoFrame(String username, final Socket s) {        
+        this.setTitle( username);
         this.curuser = username;
-        initComponents();
+        initComponents();        
         ClientContext.instance();
         ClientContext.setCurSocket(s);
         initdata();
@@ -104,7 +103,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         userlistareaLayout.setVerticalGroup(
             userlistareaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
         );
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cititool.MainApp.class).getContext().getResourceMap(UserInfoFrame.class);
@@ -128,7 +127,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         serverlistLayout.setHorizontalGroup(
             serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, serverlistLayout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
+                .addContainerGap(59, Short.MAX_VALUE)
                 .addComponent(storefolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
@@ -141,7 +140,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
                 .addGroup(serverlistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(storefolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(485, Short.MAX_VALUE))
+                .addContainerGap(502, Short.MAX_VALUE))
         );
 
         listpane.addTab(resourceMap.getString("serverlist.TabConstraints.tabTitle"), serverlist); // NOI18N
@@ -167,7 +166,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
         );
 
         listpane.addTab(resourceMap.getString("jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
@@ -189,7 +188,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 518, Short.MAX_VALUE)
+            .addGap(0, 536, Short.MAX_VALUE)
         );
 
         chattab.addTab(resourceMap.getString("jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
@@ -204,7 +203,7 @@ public class UserInfoFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
         );
 
         pack();
@@ -333,14 +332,13 @@ public class UserInfoFrame extends javax.swing.JFrame {
         //start recv thread
         hander = new ClientRecHandler(ClientContext.getCurrentSocket(), this);
         ClientContext.productLog("start receive thread...", null);
+
         hander.start();
         try {
             Thread.sleep(200);
         } catch (InterruptedException ex) {
             Logger.getLogger(UserInfoFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
 
         oper = new ClientOperation(ClientContext.getCurrentSocket(), this);
         getOper().setHandler(hander);
@@ -358,10 +356,9 @@ public class UserInfoFrame extends javax.swing.JFrame {
             ClientContext.warnLog("load self info() ", ex);
         }
         //load online info
-        freshtree();
-        ClientContext.productLog("load online over", null);
         
-
+        freshtree();        
+        ClientContext.productLog("load online over", null);
     }
 
     /**

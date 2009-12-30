@@ -43,16 +43,22 @@ public class TransProtocol {
     public final static String REG_HEADER = ((char) 0xff51) + "";
 
     public final static String REQUEST_FILE_H=((char) 0xff52) + "";
-    public final static String USERPIC_H=((char) 0xff53) + "";
-    public final static String ISFILE_H=((char) 0xff54) + "";
-    public final static String TRANSFER_FH=((char) 0xff56) + "";
-    public final static String READY_TRANSFER_FH=((char) 0xff57) + "";
-    public final static String START_TRANSFER_FH=((char) 0xff58) + "";
 
-    public final static String ONLINE_H=((char) 0xff66) + "";
-    public final static String OFFLINE_H=((char)0xff68)+"";
 
-    public final static String POPMSG_H=((char)0xff70)+"";
+    public final static String FILE_EXISTS=((char)0xff56) +"";
+    public final static String FILE_NO_EXISTS=((char)0xff57) +"";
+
+
+
+    public final static String TRANSFER_FH=((char) 0xff70) + "";
+    public final static String READY_TRANSFER_FH=((char) 0xff71) + "";
+    public final static String S_START_TRANSFER_FH=((char) 0xff72) + "";
+    public final static String R_START_TRANSFER_FH=((char) 0xff73) + "";
+
+    public final static String ONLINE_H=((char) 0xff86) + "";
+    public final static String OFFLINE_H=((char)0xff88)+"";
+
+    public final static String POPMSG_H=((char)0xff90)+"";
 
 
     public final static String ERROR = (char) 0xffff + "";

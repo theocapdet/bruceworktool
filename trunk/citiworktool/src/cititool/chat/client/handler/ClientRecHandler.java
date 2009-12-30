@@ -12,14 +12,13 @@ import cititool.chat.model.SystemConstants.SystemColor;
 import cititool.chat.protocol.TransProtocol;
 import cititool.model.UserInfo;
 import cititool.util.ComponentHelper;
+import cititool.util.ReflectHelper;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -34,11 +33,12 @@ import static cititool.util.ComponentHelper.TreeNodeSearcher;
 public class ClientRecHandler extends Thread {
 
     private Socket socket;
-   private ExecutorService pool = Executors.newFixedThreadPool(20);
+    private ExecutorService pool = Executors.newFixedThreadPool(40);
     private UserInfoFrame frame;
     private ClientOperation oper;
     private String userpic = "";
-    private BlockingQueue<RecieveFileJob> queue=new ArrayBlockingQueue<RecieveFileJob>(20);
+    private BlockingQueue<RecieveFileJob> recvQueue = new ArrayBlockingQueue<RecieveFileJob>(20);
+    private BlockingQueue<SenderFileJob> sendQueue = new ArrayBlockingQueue<SenderFileJob>(20);
 
     public ClientRecHandler(Socket socket, UserInfoFrame frame) {
         this.setDaemon(true);
@@ -62,27 +62,19 @@ public class ClientRecHandler extends Thread {
                         String p[] = t.substring(TransProtocol.TALK_REC_H.length()).split(TransProtocol.SPLIT);
                         String user = p[0];
                         String talk = p[1];
-                        JTextPane cur = frame.getTab().getCurrentChatPane();
-                        if (cur == null) {
-                            oper.openUserPane(user);
-                            cur = frame.getTab().getCurrentChatPane();
-                        }
-                        ComponentHelper.chatDefined(cur, user, SystemColor.BROWN_GREEN, true);
-                        ComponentHelper.chatDefined(cur, SystemBlank.CONTENT_START + talk, SystemColor.DEFAULT, false);
+                        getCurChat(user, talk);
                         if (!frame.isFocused()) {
                             frame.setVisible(true);
                         }
 
                     } //load userinfo
                     else if (t.startsWith(TransProtocol.USERNAME_HEADER)) {
-
                         UserInfo user = (UserInfo) TransProtocol.getObject(socket);
                         ClientContext.setCacheInfo(user.getUsername(), user);
-                        ClientContext.productLog("load user information"+ user.getUsername());
+                        ClientContext.productLog("load user information" + user.getUsername());
 //                        System.out.println(ReflectHelper.getBeanStr(user));
                         oper.unlock();
-                    } 
-                    //load user list
+                    } //load user list
                     else if (t.startsWith(TransProtocol.USERLIST_HEADER)) {
                         Object[] onlineuser = (Object[]) TransProtocol.getObject(socket);
                         ClientContext.productLog("onlineuser size==>" + onlineuser.length, null);
@@ -96,62 +88,88 @@ public class ClientRecHandler extends Thread {
                         frame.getUserTree().setModel(tree);
                         frame.getUserTree().updateUI();
                     } // load pic
-                    else if (t.startsWith(TransProtocol.USERPIC_H)) {
-                        FileProcesser fp = new FileProcesser();
-                        fp.readFile(userpic, socket);
+                    else if (t.startsWith(TransProtocol.REQUEST_FILE_H)) {
+                        String str = TransProtocol.getObject(socket).toString();
+                        if (str.startsWith(TransProtocol.FILE_EXISTS)) {
+                            String fileonServer = str.substring(TransProtocol.FILE_EXISTS.length());
+                            ClientContext.productLog("file==>" + fileonServer + "exists!");
+                            FileProcesser fp = new FileProcesser();
+                            fp.readFileInFolder(userpic, socket);
+                        } else {
+                            String fileonServer = str.substring(TransProtocol.FILE_NO_EXISTS.length());
+                            ClientContext.productLog("file==>" + fileonServer + "don't exists!");
+                        }
                         oper.unlock();
-                    }//load file
-                    else if (t.startsWith(TransProtocol.ISFILE_H)) {
-                    } else if (t.startsWith(TransProtocol.ONLINE_H)) {                        
-                        String onuser=t.substring(TransProtocol.ONLINE_H.length());
-                        ClientContext.productLog(onuser+" log on!");
-                        DefaultTreeModel tree =(DefaultTreeModel)frame.getUserTree().getModel();
-                        DefaultMutableTreeNode root=(DefaultMutableTreeNode) tree.getRoot();
-                        tree.insertNodeInto(new DefaultMutableTreeNode(onuser) , root, root.getChildCount());
-                        tree.reload();
-                    }else if(t.startsWith(TransProtocol.OFFLINE_H)){
-                        String offuser=t.substring(TransProtocol.OFFLINE_H.length());
-                        ClientContext.productLog(offuser+" log off!");
-                        DefaultTreeModel tree =(DefaultTreeModel)frame.getUserTree().getModel();
-                        DefaultMutableTreeNode root=(DefaultMutableTreeNode) tree.getRoot();
-                        TreeNodeSearcher search=new TreeNodeSearcher(offuser);
-                        DefaultMutableTreeNode node= search.searchTree(root);
-                        tree.removeNodeFromParent(node);
-                        tree.reload();
-                    }
-                    //pop up msg dialog
-                    else if(t.startsWith(TransProtocol.POPMSG_H)){
-                        oper.popupMsg(t);
-                    }
-                    //
-                    else if(t.startsWith(TransProtocol.READY_TRANSFER_FH)){
-                        String filename=t.substring(TransProtocol.READY_TRANSFER_FH.length());
-                        JPanel panel=frame.getWorkArea();
-                        RecieveFileJob job=new RecieveFileJob(filename, panel);
+                    }//recv get transfer file cmd
+                    else if (t.startsWith(TransProtocol.TRANSFER_FH)) {
+                        System.out.println("step2 get command to transfer..");
+                        String[] str = t.substring(TransProtocol.TRANSFER_FH.length()).split(TransProtocol.SPLIT);
+                        String fromuser = str[0];
+                        String filename = str[1];
+                        System.out.println("step2 from user==>" + fromuser + " tranfer file!");
+                        //open window
+                        getCurChat(fromuser, "step2 transfer file==>" + filename);
+                        JPanel panel = frame.getWorkArea();
+                        RecieveFileJob job = new RecieveFileJob(fromuser,filename, panel);
+                        job.prepared();
                         try {
-                            queue.put(job);
+                            recvQueue.put(job);
                         } catch (InterruptedException ex) {
                             ClientContext.warnLog("receive job into jobqueue error: ", ex);
+                            continue;
                         }
+                        System.out.println("step2 "+ClientContext.getCurrentUserInfo().getUsername() + " get ready to transfer file..");
+
+                    } else if (t.startsWith(TransProtocol.ONLINE_H)) {
+                        String onuser = t.substring(TransProtocol.ONLINE_H.length());
+                        ClientContext.productLog(onuser + " log on!");
+                        DefaultTreeModel tree = (DefaultTreeModel) frame.getUserTree().getModel();
+                        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getRoot();
+                        tree.insertNodeInto(new DefaultMutableTreeNode(onuser), root, root.getChildCount());
+                        tree.reload();
+                    } else if (t.startsWith(TransProtocol.OFFLINE_H)) {
+                        String offuser = t.substring(TransProtocol.OFFLINE_H.length());
+                        ClientContext.productLog(offuser + " log off!");
+                        DefaultTreeModel tree = (DefaultTreeModel) frame.getUserTree().getModel();
+                        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getRoot();
+                        TreeNodeSearcher search = new TreeNodeSearcher(offuser);
+                        DefaultMutableTreeNode node = search.searchTree(root);
+                        tree.removeNodeFromParent(node);
+                        tree.reload();
+                    } //pop up msg dialog
+                    else if (t.startsWith(TransProtocol.POPMSG_H)) {
+                        oper.popupMsg(t);
                     }
-                    else if(t.startsWith(TransProtocol.START_TRANSFER_FH)){
-                        try {                          
-                            RecieveFileJob job = queue.take();
+                    //recv get the start transfer cmd
+                    else if (t.startsWith(TransProtocol.R_START_TRANSFER_FH)) {
+                        System.out.println("recv get start read file..");
+                        try {
+                            RecieveFileJob job = recvQueue.take();
                             pool.execute(job);
                         } catch (InterruptedException ex) {
-                            Logger.getLogger(ClientRecHandler.class.getName()).log(Level.SEVERE, null, ex);
+                            ClientContext.warnLog("receive job execute error: ", ex);
+                            continue;
+                        }
+                    }else if(t.startsWith(TransProtocol.S_START_TRANSFER_FH)){
+                        System.out.println("send get start write file..");
+                        try {
+                            SenderFileJob job = sendQueue.take();
+                            pool.execute(job);
+                        } catch (InterruptedException ex) {
+                            ClientContext.warnLog("receive job execute error: ", ex);
+                            continue;
                         }
                     }
                 }
             } catch (BadLocationException ex) {
                 ClientContext.warnLog("ClientRecThread() contentPane error:", ex);
-                break;
+                continue;
             } catch (IOException ex) {
                 ClientContext.warnLog("ClientRecThread() recv content error:", ex);
-                break;
+                continue;
             } catch (ClassNotFoundException ex) {
                 ClientContext.warnLog("ClientRecThread() recv content error:", ex);
-                break;
+                continue;
             }
         }
         ClientContext.productLog("recieve thread end...");
@@ -170,5 +188,16 @@ public class ClientRecHandler extends Thread {
     public void setUserpic(String userpic) {
         this.userpic = userpic;
     }
-    
+
+    private void getCurChat(String user, String talk) throws IOException, BadLocationException, ClassNotFoundException {
+
+        if (frame.getTab().getTabByUser(user) == -1) {
+            oper.openUserPane(user);
+        }
+        JTextPane cur = frame.getTab().getCurrentChatPane();
+        ComponentHelper.chatDefined(cur, user, SystemColor.BROWN_GREEN, true);
+        ComponentHelper.chatDefined(cur, SystemBlank.CONTENT_START + talk, SystemColor.DEFAULT, false);
+    }
 }
+
+

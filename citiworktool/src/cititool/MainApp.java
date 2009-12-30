@@ -4,6 +4,7 @@
 package cititool;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
@@ -50,9 +51,8 @@ public class MainApp extends SingleFrameApplication {
         try {
 //            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.windowsLookAndFeel");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            Font f = new Font("Tahoma", Font.PLAIN, 11);
-
-           
+            
+            Font f = new Font("宋体", Font.PLAIN, 12);
             UIManager.put("TextField.font", f);
             UIManager.put("Label.font", f);
             UIManager.put("ComboBox.font", f);

@@ -74,6 +74,7 @@ public class ClientRecHandler extends Thread {
                         ClientContext.productLog("load user information" + user.getUsername());
 //                        System.out.println(ReflectHelper.getBeanStr(user));
                         oper.unlock();
+                        System.out.println("unlock user..");
                     } //load user list
                     else if (t.startsWith(TransProtocol.USERLIST_HEADER)) {
                         Object[] onlineuser = (Object[]) TransProtocol.getObject(socket);
@@ -88,20 +89,20 @@ public class ClientRecHandler extends Thread {
                         frame.getUserTree().setModel(tree);
                         frame.getUserTree().updateUI();
                     } // load pic
-                    else if (t.startsWith(TransProtocol.REQUEST_FILE_H)) {
-                        String str = TransProtocol.getObject(socket).toString();
-                        if (str.startsWith(TransProtocol.FILE_EXISTS)) {
-                            String fileonServer = str.substring(TransProtocol.FILE_EXISTS.length());
-                            ClientContext.productLog("file==>" + fileonServer + "exists!");
-                            FileProcesser fp = new FileProcesser();
-                            fp.readFileInFolder(userpic, socket);
-                        } else {
-                            String fileonServer = str.substring(TransProtocol.FILE_NO_EXISTS.length());
-                            ClientContext.productLog("file==>" + fileonServer + "don't exists!");
-                        }
+                    else if (t.startsWith(TransProtocol.FILE_EXISTS)) {
+                        String fileonServer = t.substring(TransProtocol.FILE_EXISTS.length());
+                        ClientContext.productLog("file==>" + fileonServer + "exists!");
+                        System.out.println("got the file exists...");
+                        FileProcesser fp = new FileProcesser();
+                        fp.readFileInFolder(userpic, socket);
                         oper.unlock();
-                    }//recv get transfer file cmd
-                    else if (t.startsWith(TransProtocol.TRANSFER_FH)) {
+                        System.out.println("unlock file");
+                    } else if (t.startsWith(TransProtocol.FILE_NO_EXISTS)) {
+                        String fileonServer = t.substring(TransProtocol.FILE_NO_EXISTS.length());
+                        ClientContext.productLog("file==>" + fileonServer + "don't exists!");
+                        oper.unlock();
+                         System.out.println("unlock file");
+                    } else if (t.startsWith(TransProtocol.TRANSFER_FH)) {
                         System.out.println("step2 get command to transfer..");
                         String[] str = t.substring(TransProtocol.TRANSFER_FH.length()).split(TransProtocol.SPLIT);
                         String fromuser = str[0];
@@ -110,7 +111,7 @@ public class ClientRecHandler extends Thread {
                         //open window
                         getCurChat(fromuser, "step2 transfer file==>" + filename);
                         JPanel panel = frame.getWorkArea();
-                        RecieveFileJob job = new RecieveFileJob(fromuser,filename, panel);
+                        RecieveFileJob job = new RecieveFileJob(fromuser, filename, panel);
                         job.prepared();
                         try {
                             recvQueue.put(job);
@@ -118,7 +119,7 @@ public class ClientRecHandler extends Thread {
                             ClientContext.warnLog("receive job into jobqueue error: ", ex);
                             continue;
                         }
-                        System.out.println("step2 "+ClientContext.getCurrentUserInfo().getUsername() + " get ready to transfer file..");
+                        System.out.println("step2 " + ClientContext.getCurrentUserInfo().getUsername() + " get ready to transfer file..");
 
                     } else if (t.startsWith(TransProtocol.ONLINE_H)) {
                         String onuser = t.substring(TransProtocol.ONLINE_H.length());
@@ -139,8 +140,7 @@ public class ClientRecHandler extends Thread {
                     } //pop up msg dialog
                     else if (t.startsWith(TransProtocol.POPMSG_H)) {
                         oper.popupMsg(t);
-                    }
-                    //recv get the start transfer cmd
+                    } //recv get the start transfer cmd
                     else if (t.startsWith(TransProtocol.R_START_TRANSFER_FH)) {
                         System.out.println("recv get start read file..");
                         try {
@@ -150,7 +150,7 @@ public class ClientRecHandler extends Thread {
                             ClientContext.warnLog("receive job execute error: ", ex);
                             continue;
                         }
-                    }else if(t.startsWith(TransProtocol.S_START_TRANSFER_FH)){
+                    } else if (t.startsWith(TransProtocol.S_START_TRANSFER_FH)) {
                         System.out.println("send get start write file..");
                         try {
                             SenderFileJob job = sendQueue.take();

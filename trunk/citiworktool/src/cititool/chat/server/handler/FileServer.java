@@ -30,20 +30,16 @@ public class FileServer {
     private void task(final Socket sender, final String sendName, final SessionServer recv, final String file) {
 
         if (requestType.equals(TransProtocol.REQUEST_FILE_H)) {
-            try {
-                TransProtocol.writeStr(TransProtocol.REQUEST_FILE_H, sender);
-            } catch (IOException ex) {
-                ServerContext.warnServerLog("FileTransServer::writ pic header error:", ex);
-            }
             FileProcesser fp = new FileProcesser();
             File f = new File(ServerContext.getSystemFileFolder() + File.separator + file);
             try {
                 if (f.exists()) {
-                    ServerContext.productServerLog(file + " exists!");
+                    ServerContext.productServerLog(f.getPath() + " exists!");
+                    System.out.println("file exists..");
                     TransProtocol.writeStr(TransProtocol.FILE_EXISTS + file, sender);
                     fp.writeFile(f, sender);
                 } else {
-                    ServerContext.productServerLog(file + "dont exists!");
+                    ServerContext.productServerLog(f.getPath() + "dont exists!");
                     TransProtocol.writeStr(TransProtocol.FILE_NO_EXISTS + file, sender);
                 }
             } catch (IOException ex) {

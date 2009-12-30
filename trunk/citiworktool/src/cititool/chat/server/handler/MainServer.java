@@ -212,11 +212,11 @@ public class MainServer extends Thread {
                             } //registry server
                             else if (t.startsWith(TransProtocol.REG_HEADER)) {
                                 if (regServer == null) {
-                                    regServer = new RegisterServer(socket);
-                                    regServer.start();
-                                } else {
-                                    regServer.setSocket(socket);
+                                    regServer = new RegisterServer();                                   
                                 }
+                                regServer.addTask(socket);
+                                System.out.println("reg ok..");
+
                             } else if (t.startsWith(TransProtocol.LOGIN_HEADER)) {
                                 String[] part = t.substring(1).split(TransProtocol.SPLIT);
                                 if (ServerDataHandler.MatchLogin(part[0], part[1], serverName) == SystemConstants.LOGON) {

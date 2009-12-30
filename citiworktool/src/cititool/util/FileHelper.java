@@ -4,10 +4,16 @@
  */
 package cititool.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -115,6 +121,8 @@ public class FileHelper {
         private List<File> rootlist = new ArrayList<File>();
         private int max = -1;
         private boolean flag = false;
+        private int lineNum=0;
+        private boolean countLine=false;
 
         public FileCounter(File root) {
             rootlist.add(root);
@@ -132,6 +140,10 @@ public class FileHelper {
         public FileCounter(List<File> list, int max) {
             rootlist.addAll(list);
             this.max = max;
+        }
+
+        public void setCountLine(boolean t){
+            countLine=t;
         }
 
         public boolean search() {
@@ -153,6 +165,23 @@ public class FileHelper {
                     flag = true;
                     return;
                 }
+                if(countLine){
+                    BufferedReader br = null;
+                    try {
+                        br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+                        while (br.readLine() != null) {
+                            lineNum++;
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(FileHelper.class.getName()).log(Level.SEVERE, null, ex);
+                    }  finally {
+                        try {
+                            br.close();
+                        } catch (IOException ex) {
+                            Logger.getLogger(FileHelper.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
                 con.add(f);
             }
         }
@@ -161,16 +190,19 @@ public class FileHelper {
             return con;
         }
 
+        public int getLineNumber(){
+
+            return  lineNum;
+        }
+
     }
 
     public static void main(String args[]) {
 
-        List<File> f=new ArrayList<File>();
-        f.add(new File("C:/Documents and Settings/ZX04741/Desktop/New Folder (2)"));
-        f.add(new File("C:/Documents and Settings/ZX04741/Desktop/tmp"));
-        FileCounter con=new FileCounter(
-                f,3);
+
+        FileCounter con=new FileCounter(new File("C:/brucexx/nbworkspace/citiworktool/src/cititool"));
+         con.setCountLine(true);
         con.search();
-        System.out.println(con.getTotalFiles().size());
+        System.out.println(con.getTotalFiles().size()+" || "+con.getLineNumber());
     }
 }
